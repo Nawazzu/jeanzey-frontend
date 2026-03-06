@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Lora:wght@400..700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Apply Lora to all body text by default */
+body {
+  font-family: 'Lora', serif;
+  color: #1f2937; /* text-gray-800 for consistency */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Apply Playfair to headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Active nav indicator */
+a.active hr {
+  display: block;
+}
+
+/* Hide scrollbar for a clean look */
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* ============================================
+   LUXURY BUTTON RIPPLE EFFECT
+============================================ */
+.ripple-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-button .ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-animation 0.6s ease-out;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   WISHLIST HEART BURST
+============================================ */
+@keyframes heart-burst {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heart-burst {
+  animation: heart-burst 0.4s ease-out;
+}
+/* Mobile nav active style */
+@media (max-width: 640px) {
+  a.active {
+    background-color: black;
+    color: white;
+  }
+}
+
