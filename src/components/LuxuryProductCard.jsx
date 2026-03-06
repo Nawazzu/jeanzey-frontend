@@ -1,23 +1,51 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 
 const LuxuryProductCard = ({ id, image, name, price }) => {
-  const { currency, isInWishlist, toggleWishlist } = useContext(ShopContext);
+  const { currency, isInWishlist, toggleWishlist, navigate } = useContext(ShopContext);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const liked = isInWishlist(id);
+
+  // ── Touch scroll detection ──
+  const touchStartY = useRef(null);
+  const touchStartX = useRef(null);
+  const touchMoved = useRef(false);
 
   const handleHover = (state) => {
     if (image?.length > 1) setCurrentImageIndex(state ? 1 : 0);
   };
 
-  const handleTap = (e) => {
-    if (image?.length > 1) {
-      e.preventDefault();
-      setCurrentImageIndex((i) => (i === 0 ? 1 : 0));
-      setTimeout(() => setCurrentImageIndex(0), 600);
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchStartX.current = e.touches[0].clientX;
+    touchMoved.current = false;
+  };
+
+  const handleTouchMove = (e) => {
+    if (touchStartY.current === null) return;
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    if (dy > 8 || dx > 8) {
+      touchMoved.current = true;
     }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchMoved.current) {
+      // Real tap — toggle image preview on first tap, navigate on second
+      if (image?.length > 1 && currentImageIndex === 0) {
+        e.preventDefault();
+        setCurrentImageIndex(1);
+        setTimeout(() => setCurrentImageIndex(0), 600);
+      } else {
+        navigate(`/product/${id}`);
+      }
+    }
+    touchStartY.current = null;
+    touchStartX.current = null;
+    touchMoved.current = false;
   };
 
   const handleWishlist = (e) => {
@@ -31,9 +59,11 @@ const LuxuryProductCard = ({ id, image, name, price }) => {
       to={`/product/${id}`}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
-      onClick={handleTap}
-      onTouchStart={handleTap}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className="group block cursor-pointer"
+      style={{ touchAction: "pan-y" }}
     >
       {/* Image Container */}
       <div className="relative overflow-hidden bg-[#f9f9f9] aspect-[4/5] rounded-2xl border border-gray-200 hover:border-gray-400 transition-all duration-500 shadow-md hover:shadow-2xl">

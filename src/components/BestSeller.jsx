@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
-import Title from "./Title";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { LuxuryProductCard } from "./LatestCollection";
@@ -41,19 +40,42 @@ const BestSeller = () => {
       id="best-seller"
       className="my-20 px-4 sm:px-8 lg:px-16 bg-white/80 backdrop-blur-sm rounded-3xl border border-gray-200"
     >
+      {/* ── Premium Heading Block ── */}
       <div className="text-center py-12 max-w-4xl mx-auto">
         <div ref={titleRef}>
-          <Title text1={"BEST"} text2={"SELLERS"} />
+          {/* Eyebrow */}
+          <p className="text-[10px] sm:text-xs tracking-[0.35em] uppercase text-black-400 font-medium mb-5">
+            Customer Favourites
+          </p>
+          {/* Main heading */}
+          <h2
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-[1.08] tracking-[-0.01em] text-gray-900"
+            style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}
+          >
+            Best{" "}
+            <em className="italic font-normal text-gray-500">Sellers</em>
+          </h2>
+          {/* Thin rule */}
+          <div className="flex items-center justify-center gap-4 mt-6 mb-6">
+            <div className="h-px w-16 bg-gray-300" />
+            <div className="w-1 h-1 rounded-full bg-gray-400" />
+            <div className="h-px w-16 bg-gray-300" />
+          </div>
         </div>
+
+        {/* Description */}
         <p
           ref={paragraphRef}
-          className="mt-6 text-sm sm:text-base md:text-lg text-gray-500 font-light leading-relaxed tracking-wide"
+          className="text-sm sm:text-base md:text-lg text-gray-400 font-light leading-relaxed tracking-wide max-w-xl mx-auto"
+          style={{ fontFamily: "'Jost', sans-serif" }}
         >
           Experience the pieces that define timeless elegance. Our Best Sellers
-          reflect refined craftsmanship and luxurious comfort that set Jeanzey
+          reflect refined craftsmanship and luxurious comfort that set{" "}
+          <span className="text-gray-600 font-medium tracking-widest uppercase text-xs">
+            Jeanzey
+          </span>{" "}
           apart.
         </p>
-        <div className="mt-8 w-24 h-px bg-gray-300 mx-auto" />
       </div>
 
       {/* Grid Layout */}

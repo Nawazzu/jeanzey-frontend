@@ -262,11 +262,11 @@ const Collection = () => {
               </div>
             </div>
 
-            {/* ── Price Range Filter ── */}
+           {/* ── Price Range Filter ── */}
             <div className={`border border-gray-300 px-4 py-4 mt-4 ${showFilter ? "" : "hidden"} sm:block`}>
               <p className="mb-1 text-sm font-medium tracking-wide">FILTER BY PRICE</p>
 
-              {/* thin top rule like in the screenshot */}
+              {/* thin top rule */}
               <div className="w-6 h-px bg-gray-400 mb-4 mt-1" />
 
               {/* Dual-handle slider */}
@@ -276,13 +276,15 @@ const Collection = () => {
                   className="jz-slider-fill"
                   style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }}
                 />
-                {/* min thumb */}
+                {/* min thumb — step 50, use onInput for smooth mobile response */}
                 <input
                   type="range"
                   min={minBound}
                   max={maxBound}
+                  step={50}
                   value={priceRange[0]}
                   onChange={handleMinThumb}
+                  onInput={handleMinThumb}
                   style={{ zIndex: priceRange[0] > maxBound - 100 ? 5 : 3 }}
                 />
                 {/* max thumb */}
@@ -290,13 +292,15 @@ const Collection = () => {
                   type="range"
                   min={minBound}
                   max={maxBound}
+                  step={50}
                   value={priceRange[1]}
                   onChange={handleMaxThumb}
+                  onInput={handleMaxThumb}
                   style={{ zIndex: 4 }}
                 />
               </div>
 
-              {/* Filter button + price label — matches screenshot layout */}
+              {/* Filter button + price label */}
               <div className="flex items-center justify-between mt-4 gap-3">
                 <button
                   type="button"

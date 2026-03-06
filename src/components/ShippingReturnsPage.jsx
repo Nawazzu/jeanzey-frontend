@@ -10,9 +10,9 @@ const ShippingReturnsPage = () => {
 
   const faqData = [
     {
-      question: "When will my JEANZE order be shipped?",
+      question: "When will my JEANZEY order be shipped?",
       answer:
-        "All JEANZE pieces are processed within 1–2 business days after your order is confirmed. You’ll receive a tracking link once your order has been shipped.",
+        "All JEANZEY pieces are processed within 1–2 business days after your order is confirmed. You’ll receive a tracking link once your order has been shipped.",
     },
     {
       question: "Do you offer same-day delivery in Mumbai?",
@@ -22,7 +22,7 @@ const ShippingReturnsPage = () => {
     {
       question: "Do you ship all over India?",
       answer:
-        "No. As of now, JEANZE delivers within Mumbai. We shall start PAN India Service soon.",
+        "No. As of now, JEANZEY delivers within Mumbai. We shall start PAN India Service soon.",
     },
     {
       question: "How can I return or exchange a product?",
@@ -37,7 +37,7 @@ const ShippingReturnsPage = () => {
     {
       question: "Can I modify or cancel my order after placing it?",
       answer:
-        "Orders can only be modified or cancelled within 24 hours of placement. Please contact our support team immediately at jeanze.help@gmail.com for assistance.",
+        "Orders can only be modified or cancelled within 24 hours of placement. Please contact our support team immediately at jeanzey.help@gmail.com for assistance.",
     },
   ];
 
@@ -56,7 +56,7 @@ const ShippingReturnsPage = () => {
             animate={{ x: 0, opacity: 1 }}
           >
             <p className="text-[#444] text-[1.1rem] leading-8">
-              At <span className="font-semibold text-black">JEANZE</span>, we
+              At <span className="font-semibold text-black">JEANZEY</span>, we
               ensure that your experience is seamless—from the moment you order
               to the day your package arrives. Every piece is carefully packed,
               quality-checked, and shipped with precision and care.

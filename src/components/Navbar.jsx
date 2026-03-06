@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, MapPin, Heart, ShoppingBag } from "lucide-react";
+import { User, MapPin, Heart, ShoppingBag, X } from "lucide-react";
 import SavedAddresses from "./SavedAddresses";
 
 const Navbar = () => {
@@ -46,6 +46,16 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenu]);
 
   if (location.pathname === "/login") return null;
 
@@ -92,7 +102,6 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          {/* ✅ font size bumped from text-sm to text-[15px], wrapped each link in motion.div for glow */}
           <ul className="hidden md:flex gap-10 text-[15px] tracking-wider font-semibold uppercase">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to;
@@ -267,28 +276,143 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* Mobile Menu Icon */}
-            <div
-              className="md:hidden flex flex-col gap-1 cursor-pointer z-50"
+            {/* ── Mobile Hamburger ── */}
+            <button
+              className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-[5px] cursor-pointer z-50 relative"
               onClick={() => setMobileMenu(!mobileMenu)}
+              aria-label="Toggle menu"
             >
-              <span className={`w-6 h-0.5 transition-all duration-300 ${scrolled ? "bg-white" : "bg-black"} ${mobileMenu ? "rotate-45 translate-y-1.5" : ""}`}></span>
-              <span className={`w-6 h-0.5 transition-all duration-300 ${scrolled ? "bg-white" : "bg-black"} ${mobileMenu ? "opacity-0" : ""}`}></span>
-              <span className={`w-6 h-0.5 transition-all duration-300 ${scrolled ? "bg-white" : "bg-black"} ${mobileMenu ? "-rotate-45 -translate-y-1.5" : ""}`}></span>
-            </div>
-
-            {/* Mobile Menu Dropdown */}
-            {mobileMenu && (
-              <div className="absolute top-16 left-0 w-full bg-white/95 backdrop-blur-xl flex flex-col items-center gap-6 py-6 shadow-xl transition-all duration-500 z-40">
-                <a href="/" className="text-black text-lg tracking-wide hover:text-gray-700 transition-all" onClick={() => setMobileMenu(false)}>Home</a>
-                <a href="/collection" className="text-black text-lg tracking-wide hover:text-gray-700 transition-all" onClick={() => setMobileMenu(false)}>Collection</a>
-                <a href="/about" className="text-black text-lg tracking-wide hover:text-gray-700 transition-all" onClick={() => setMobileMenu(false)}>About</a>
-                <a href="/contact" className="text-black text-lg tracking-wide hover:text-gray-700 transition-all" onClick={() => setMobileMenu(false)}>Contact</a>
-              </div>
-            )}
+              <motion.span
+                animate={mobileMenu ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                className={`block w-6 h-[1.5px] origin-center ${scrolled ? "bg-white" : "bg-black"}`}
+              />
+              <motion.span
+                animate={mobileMenu ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                transition={{ duration: 0.2 }}
+                className={`block w-4 h-[1.5px] self-end ${scrolled ? "bg-white" : "bg-black"}`}
+              />
+              <motion.span
+                animate={mobileMenu ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                className={`block w-6 h-[1.5px] origin-center ${scrolled ? "bg-white" : "bg-black"}`}
+              />
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* ── Premium Mobile Drawer ── */}
+      <AnimatePresence>
+        {mobileMenu && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setMobileMenu(false)}
+            />
+
+            {/* Drawer — slides in from right */}
+            <motion.div
+              key="drawer"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+              className="fixed top-0 right-0 h-full w-[75vw] max-w-[320px] bg-[#0c0c0c] z-50 md:hidden flex flex-col"
+            >
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/10">
+                <span
+                  className="text-white text-lg tracking-[5px] uppercase"
+                  style={{ fontFamily: "'Faster One', system-ui", fontWeight: 400 }}
+                >
+                  Jean-Zey
+                </span>
+                <button
+                  onClick={() => setMobileMenu(false)}
+                  className="w-8 h-8 flex items-center justify-center border border-white/20 text-white/70 hover:text-white hover:border-white/50 transition-all duration-200"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* Nav Links */}
+              <nav className="flex flex-col px-8 pt-8 gap-1 flex-1">
+                {navLinks.map((link, i) => (
+                  <motion.div
+                    key={link.to}
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.07, duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                  >
+                    <Link
+                      to={link.to}
+                      onClick={() => setMobileMenu(false)}
+                      className={`group flex items-center justify-between py-4 border-b border-white/8 transition-all duration-200 ${
+                        location.pathname === link.to
+                          ? "text-white"
+                          : "text-white/50 hover:text-white"
+                      }`}
+                    >
+                      <span className="text-xs tracking-[4px] uppercase font-medium">
+                        {link.name}
+                      </span>
+                      <motion.span
+                        className="text-white/30 group-hover:text-white/70 transition-colors"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 4 }}
+                      >
+                        →
+                      </motion.span>
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+
+              {/* Drawer Footer */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+                className="px-8 pb-10 pt-6 border-t border-white/10"
+              >
+                {token && userData ? (
+                  <div className="space-y-3">
+                    <p className="text-white/40 text-[10px] tracking-[3px] uppercase mb-4">
+                      Signed in as
+                    </p>
+                    <p className="text-white text-sm font-medium tracking-wide truncate">
+                      {userData.name}
+                    </p>
+                    <p className="text-white/40 text-xs truncate mb-4">
+                      {userData.email}
+                    </p>
+                    <button
+                      onClick={() => { logout(); setMobileMenu(false); }}
+                      className="w-full border border-white/20 text-white/70 text-[10px] tracking-[3px] uppercase py-3 hover:bg-white hover:text-black transition-all duration-300"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { navigate("/login"); setMobileMenu(false); }}
+                    className="w-full bg-white text-black text-[10px] tracking-[3px] uppercase py-3 font-semibold hover:bg-white/90 transition-all duration-300"
+                  >
+                    Sign In
+                  </button>
+                )}
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Saved Addresses Modal */}
       <SavedAddresses

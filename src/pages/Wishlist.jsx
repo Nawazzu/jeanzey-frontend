@@ -229,7 +229,7 @@ const Wishlist = () => {
             {recommended.length > 0 && (
               <div className="mt-20">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-black text-center tracking-[3px] uppercase mb-8">
-                  🖤 You May Also Like 🖤
+                  🖤You May Also Like !
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                   {recommended.map((item) => (

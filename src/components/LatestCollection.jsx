@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
-import Title from "./Title";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Heart } from "lucide-react";
@@ -38,19 +37,43 @@ const LatestCollection = () => {
 
   return (
     <div id="latest-collection" className="my-20 px-4 sm:px-8 lg:px-16">
+      {/* ── Premium Heading Block ── */}
       <div className="text-center py-12 max-w-4xl mx-auto">
         <div ref={titleRef}>
-          <Title text1={"LATEST"} text2={"COLLECTIONS"} />
+          {/* Eyebrow */}
+          <p className="text-[10px] sm:text-xs tracking-[0.35em] uppercase text-black-400 font-medium mb-5">
+            New Arrivals
+          </p>
+          {/* Main heading */}
+          <h2
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-[1.08] tracking-[-0.01em] text-gray-900"
+            style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}
+          >
+            Latest{" "}
+            <em className="italic font-normal text-gray-500">Collections</em>
+          </h2>
+          {/* Thin rule */}
+          <div className="flex items-center justify-center gap-4 mt-6 mb-6">
+            <div className="h-px w-16 bg-gray-300" />
+            <div className="w-1 h-1 rounded-full bg-gray-400" />
+            <div className="h-px w-16 bg-gray-300" />
+          </div>
         </div>
+
+        {/* Description */}
         <p
           ref={paragraphRef}
-          className="mt-6 text-sm sm:text-base md:text-lg text-gray-500 font-light leading-relaxed tracking-wide"
+          className="text-sm sm:text-base md:text-lg text-gray-400 font-light leading-relaxed tracking-wide max-w-xl mx-auto"
+          style={{ fontFamily: "'Jost', sans-serif" }}
         >
           Discover timeless sophistication in our Latest Collection. Each
           piece, crafted with precision, reflects refined luxury and modern
-          artistry that defines Jeanzey.
+          artistry that defines{" "}
+          <span className="text-gray-600 font-medium tracking-widest uppercase text-xs">
+            Jeanzey
+          </span>
+          .
         </p>
-        <div className="mt-8 w-24 h-px bg-gray-300 mx-auto" />
       </div>
 
       {/* Grid Layout */}
@@ -74,24 +97,45 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
     useContext(ShopContext);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const liked = isInWishlist(id);
-  const [isTapping, setIsTapping] = useState(false);
+
+  // ── Touch scroll detection ──
+  const touchStartY = useRef(null);
+  const touchStartX = useRef(null);
+  const touchMoved = useRef(false);
 
   const handleHover = (state) => {
     if (image?.length > 1) setCurrentImageIndex(state ? 1 : 0);
   };
 
-  // ✅ Tap fix: allow combo product navigation while keeping preview
-  const handleTap = (e) => {
-    if (image?.length > 1 && !isTapping) {
-      setIsTapping(true);
-      setCurrentImageIndex((i) => (i === 0 ? 1 : 0));
-      setTimeout(() => {
-        setIsTapping(false);
+  const handleClick = () => {
+    navigate(`/product/${id}`);
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchStartX.current = e.touches[0].clientX;
+    touchMoved.current = false;
+  };
+
+  const handleTouchMove = (e) => {
+    if (touchStartY.current === null) return;
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    if (dy > 8 || dx > 8) touchMoved.current = true;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchMoved.current) {
+      if (image?.length > 1 && currentImageIndex === 0) {
+        setCurrentImageIndex(1);
+        setTimeout(() => setCurrentImageIndex(0), 600);
+      } else {
         navigate(`/product/${id}`);
-      }, 400);
-    } else {
-      navigate(`/product/${id}`);
+      }
     }
+    touchStartY.current = null;
+    touchStartX.current = null;
+    touchMoved.current = false;
   };
 
   const handleWishlist = (e) => {
@@ -104,9 +148,12 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
     <div
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
-      onClick={handleTap}
-      onTouchStart={handleTap}
+      onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className="group block cursor-pointer"
+      style={{ touchAction: "pan-y" }}
     >
       <div className="relative overflow-hidden bg-[#f8f8f8] aspect-[3/4] rounded-2xl border border-gray-200 hover:border-gray-400 transition-all duration-500 shadow-sm hover:shadow-lg">
         {image?.map((img, i) => (
@@ -138,8 +185,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
           {name}
         </h3>
         <p className="text-sm sm:text-base font-light text-gray-600">
-          {currency}
-          {price}
+          {currency}{price}
         </p>
       </div>
     </div>

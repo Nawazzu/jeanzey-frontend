@@ -1,8 +1,8 @@
 import React from 'react';
 
 const WhatsAppButton = ({ 
-  phoneNumber = '918169222068', 
-  message = 'Hi! I am interested in BagZone products.' 
+  phoneNumber = '919987683105', 
+  message = "Hello Team Jean-Zey! I’m interested in your fashion collection and would like some assistance."
 }) => {
   return (
     <a

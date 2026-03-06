@@ -44,42 +44,43 @@ const HoverTextCard = () => {
         {cards.map((card, index) => (
           <div
             key={card.id}
-            className="relative h-[480px] md:h-[600px] lg:h-[650px] overflow-hidden group cursor-pointer"
+            className="relative h-[480px] md:h-[600px] lg:h-[650px] overflow-hidden cursor-pointer"
             style={{ animationDelay: `${index * 0.2}s` }}
           >
-            {/* Image (Optimized) */}
+            {/* Image — scale permanently applied */}
             <picture>
               <source srcSet={card.img.replace(".jpg", ".webp")} type="image/webp" />
               <img
                 src={card.img}
                 alt={card.title}
                 loading="lazy"
-                className="absolute w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                className="absolute w-full h-full object-cover scale-110"
               />
             </picture>
 
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/70 transition-all duration-500"></div>
+            {/* Overlay — permanent darker state */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-            {/* Text Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6 transform transition-all duration-500 group-hover:translate-y-[-10px]">
+            {/* Text Content — permanently shifted up */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6 translate-y-[-10px]">
               <h3 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-[0.15em] mb-3">
                 {card.title}
               </h3>
               <p className="text-xs md:text-sm font-light tracking-[0.3em] uppercase mb-6 opacity-90">
                 {card.subtitle}
               </p>
+              {/* Button — permanently visible */}
               <button
                 onClick={() => navigate("/collection")}
-                className="border-2 border-white px-8 py-3 text-xs md:text-sm uppercase tracking-widest font-medium hover:bg-white hover:text-black transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0"
+                className="border-2 border-white px-8 py-3 text-xs md:text-sm uppercase tracking-widest font-medium hover:bg-white hover:text-black transition-all duration-300"
               >
                 {card.button}
               </button>
             </div>
 
-            {/* Decorative Corners */}
-            <div className="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* Decorative Corners — permanently visible */}
+            <div className="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-white/40" />
+            <div className="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-white/40" />
           </div>
         ))}
       </div>
