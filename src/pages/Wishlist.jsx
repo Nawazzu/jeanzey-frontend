@@ -95,13 +95,10 @@ const Wishlist = () => {
     }
   }, [wishlist, products]);
 
-  // ✅ Single Toast Fix (Removed double toasts)
   const handleRemove = async (id) => {
     await removeFromWishlist(id);
-    // glassToast("Removed from Wishlist", "info"); // commented for future use
   };
 
-  // ✅ FIXED: Only one “Item added to cart” toast when moving from wishlist
   const handleMoveToCart = async (item) => {
     const needsSize = ["shirt", "tshirt", "combo", "jeans"].includes(
       item.category?.toLowerCase()
@@ -113,11 +110,8 @@ const Wishlist = () => {
       return;
     }
 
-    // ✅ Silent operations to prevent duplicate toasts
     await addToCart(item._id, null, true);
     await removeFromWishlist(item._id, true);
-
-    // ✅ Show only one clean toast
     glassToast("Item added to cart", "success");
   };
 
@@ -182,6 +176,7 @@ const Wishlist = () => {
                   whileHover={{ scale: 1.04 }}
                   className="relative bg-white/90 backdrop-blur-md rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-200 overflow-hidden group"
                 >
+                  {/* Image — navigate on click, no buttons here */}
                   <Link
                     to={`/product/${item._id}`}
                     onClick={() => window.scrollTo(0, 0)}
@@ -193,19 +188,16 @@ const Wishlist = () => {
                         className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                     </div>
-                    <div className="p-4 text-center">
-                      <h3 className="text-sm font-medium uppercase text-gray-900 tracking-wide">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm font-light text-gray-600 mt-1">
-                        {currency}
-                        {item.price}
-                      </p>
-                    </div>
                   </Link>
 
-                  {/* Overlay Buttons */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+                  {/* 
+                    ── DESKTOP: hover overlay on the image (pointer devices only) ──
+                    pointer-events-none on mobile so tapping image never hits these 
+                  */}
+                  <div className="absolute top-0 left-0 right-0 bottom-[88px] 
+                    bg-black/0 group-hover:bg-black/10 transition-all duration-500 
+                    hidden sm:flex items-center justify-center gap-3 
+                    opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto">
                     <button
                       onClick={() => handleMoveToCart(item)}
                       className="bg-white/90 text-black rounded-full p-3 hover:bg-black hover:text-white transition-all duration-300"
@@ -219,6 +211,44 @@ const Wishlist = () => {
                       title="Remove"
                     >
                       <Trash2 size={18} />
+                    </button>
+                  </div>
+
+                  {/* Product name + price — always a link */}
+                  <Link
+                    to={`/product/${item._id}`}
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
+                    <div className="p-3 text-center">
+                      <h3 className="text-sm font-medium uppercase text-gray-900 tracking-wide">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm font-light text-gray-600 mt-1">
+                        {currency}{item.price}
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* 
+                    ── MOBILE ONLY: always-visible action buttons below the name ──
+                    sm:hidden so they only show on small screens 
+                  */}
+                  <div className="flex sm:hidden items-center justify-center gap-3 px-3 pb-3">
+                    <button
+                      onClick={() => handleMoveToCart(item)}
+                      className="p-2 rounded-xl bg-black text-white
+                        active:scale-95 transition-all duration-200"
+                      title="Add to Cart"
+                    >
+                      <ShoppingBag size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleRemove(item._id)}
+                      className="p-2 rounded-xl border border-red-200 text-red-500
+                        active:scale-95 transition-all duration-200"
+                      title="Remove"
+                    >
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </motion.div>
@@ -259,8 +289,7 @@ const Wishlist = () => {
                             {item.name}
                           </h3>
                           <p className="text-sm text-gray-600 font-light">
-                            {currency}
-                            {item.price}
+                            {currency}{item.price}
                           </p>
                         </div>
                       </Link>

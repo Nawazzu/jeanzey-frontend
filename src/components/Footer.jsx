@@ -17,6 +17,11 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Instant scroll to top on any nav click
+  const handleNavClick = () => {
+    window.scrollTo(0, 0);
+  };
+
   return (
     <footer className="relative w-full py-12 md:py-16 overflow-hidden bg-transparent">
       <div className="w-full px-6 sm:px-10 md:px-16 lg:px-24">
@@ -43,7 +48,7 @@ const Footer = () => {
                 { name: "The Founder's Vision", path: "/founders-vision" },
               ].map((item, idx) => (
                 <li key={idx} className="footer-link">
-                  <Link to={item.path}>{item.name}</Link>
+                  <Link to={item.path} onClick={handleNavClick}>{item.name}</Link>
                 </li>
               ))}
             </ul>
@@ -63,7 +68,7 @@ const Footer = () => {
                 { name: "Contact Us", path: "/contact" },
               ].map((item, idx) => (
                 <li key={idx} className="footer-link">
-                  <Link to={item.path}>{item.name}</Link>
+                  <Link to={item.path} onClick={handleNavClick}>{item.name}</Link>
                 </li>
               ))}
             </ul>
@@ -88,6 +93,7 @@ const Footer = () => {
                         ? "/limited-editions"
                         : "#"
                     }
+                    onClick={handleNavClick}
                   >
                     {item}
                   </Link>
@@ -139,7 +145,7 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 tracking-widest">
           <p>© 2025 JEANZE. All Rights Reserved.</p>
           <div className="flex items-center gap-6 mt-4 sm:mt-0">
-            <Link to="/terms-and-conditions" className="footer-link">
+            <Link to="/terms-and-conditions" className="footer-link" onClick={handleNavClick}>
               Terms & Conditions
             </Link>
           </div>
