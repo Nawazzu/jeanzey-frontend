@@ -26,16 +26,18 @@ import OurGifts from "./pages/OurGifts";
 import ShippingReturnsPage from "./components/ShippingReturnsPage";
 import Wishlist from "./pages/Wishlist";
 import LimitedEdition from "./pages/LimitedEdition";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
+      {/* ✅ Scrolls to top on every route change */}
+      <ScrollToTop />
+
       <ToastContainer />
 
       {/* Navbar */}
       <Navbar />
-
- 
 
       {/* Main Content */}
       <div className="flex-1 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
@@ -60,7 +62,7 @@ const App = () => {
           <Route path="/our-gifts" element={<OurGifts />} />
           <Route path="/shipping-returns" element={<ShippingReturnsPage />} />
           <Route path="/wishlist" element={<Wishlist />} />
-           <Route path="/limited-editions" element={<LimitedEdition />} />
+          <Route path="/limited-editions" element={<LimitedEdition />} />
         </Routes>
       </div>
 
