@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import RelatedProducts from "../components/RelatedProducts";
 import ReviewCard from "../components/ReviewCard";
-import { ArrowLeft, Star, MessageSquare, Ruler, Heart, X } from "lucide-react";
+import { ArrowLeft, Star, MessageSquare, Ruler, Heart, X, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
 import SkeletonProductPage from "../components/SkeletonProductPage";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -80,6 +80,40 @@ const scrollbarStyles = `
     font-size:0.65rem; font-weight:700; color:#111; letter-spacing:0.04em;
     background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(220,220,220,0.7));
     border:1px solid rgba(0,0,0,0.12); padding:1px 6px; border-radius:999px; backdrop-filter:blur(4px);
+  }
+
+  /* Premium image counter badge */
+  .img-counter-badge {
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  /* Dot pagination */
+  .gallery-dot {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  .gallery-dot-active {
+    background: #111 !important;
+    width: 20px !important;
+    border-radius: 999px !important;
+  }
+  .gallery-dot-inactive {
+    background: rgba(0,0,0,0.25) !important;
+    width: 6px !important;
+  }
+
+  /* Thumbnail active ring */
+  .thumb-active {
+    box-shadow: 0 0 0 2px #111, 0 4px 12px rgba(0,0,0,0.15);
   }
 `;
 
@@ -164,14 +198,13 @@ const ProductWhatsAppButton = ({ productName, price, category, currency }) => {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Enquire about this product on WhatsApp"
-      className="fixed bottom-24 right-6 z-50 bg-black/90 backdrop-blur-sm border border-white/20 text-white rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/70 group flex items-center justify-center"
+      className="fixed bottom-8 right-6 z-50 bg-black/90 backdrop-blur-sm border border-white/20 text-white rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/70 group flex items-center justify-center"
     >
       <img
         src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
         alt="WhatsApp"
         className="w-7 h-7 filter grayscale invert transition-all duration-300 group-hover:brightness-125"
       />
-      {/* Tooltip */}
       <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/80 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none leading-snug">
         Enquire about<br />
         <span className="font-semibold">{productName}</span>
@@ -179,7 +212,6 @@ const ProductWhatsAppButton = ({ productName, price, category, currency }) => {
     </a>
   );
 };
-
 
 const Product = () => {
   const navigate = useNavigate();
@@ -191,6 +223,7 @@ const Product = () => {
 
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
+  const [imageIndex, setImageIndex] = useState(0);
   const [size, setSize] = useState("");
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState("");
@@ -202,28 +235,60 @@ const Product = () => {
   const [ripples, setRipples] = useState([]);
   const [heartBurst, setHeartBurst] = useState(false);
 
+  // Touch swipe state
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+  const touchMoved = useRef(false);
+
   useEffect(() => {
     const foundProduct = products.find((item) => item._id === productId);
     if (foundProduct) {
       setProductData(foundProduct);
       setImage(foundProduct.image[0]);
+      setImageIndex(0);
     }
   }, [productId, products]);
 
-  const handlePrevImage = (e) => {
-    e.stopPropagation();
+  const goToImage = (idx) => {
     if (!productData?.image?.length) return;
-    const currentIndex = productData.image.indexOf(image);
-    const prevIndex = currentIndex === 0 ? productData.image.length - 1 : currentIndex - 1;
-    setImage(productData.image[prevIndex]);
+    setImageIndex(idx);
+    setImage(productData.image[idx]);
+  };
+
+  const handlePrevImage = (e) => {
+    e?.stopPropagation();
+    if (!productData?.image?.length) return;
+    const prev = imageIndex === 0 ? productData.image.length - 1 : imageIndex - 1;
+    goToImage(prev);
   };
 
   const handleNextImage = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     if (!productData?.image?.length) return;
-    const currentIndex = productData.image.indexOf(image);
-    const nextIndex = currentIndex === productData.image.length - 1 ? 0 : currentIndex + 1;
-    setImage(productData.image[nextIndex]);
+    const next = imageIndex === productData.image.length - 1 ? 0 : imageIndex + 1;
+    goToImage(next);
+  };
+
+  // Swipe handlers for mobile
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    touchMoved.current = false;
+  };
+  const handleTouchMove = (e) => {
+    if (!touchStartX.current) return;
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+    if (dx > 8 || dy > 8) touchMoved.current = true;
+  };
+  const handleTouchEnd = (e) => {
+    if (!touchStartX.current) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    if (Math.abs(dx) > 40 && dy < 60) {
+      dx < 0 ? handleNextImage() : handlePrevImage();
+    }
+    touchStartX.current = null;
   };
 
   const sizeCategories = ["shirt", "jeans", "combo", "tshirt"];
@@ -367,10 +432,12 @@ const Product = () => {
   const sizeDetails = getSizeDetails();
   const formattedDetails = formatSizeDetails(sizeDetails);
 
+  const totalImages = productData?.image?.length || 0;
+
   return productData ? (
     <div className="bg-white text-gray-900 min-h-screen border-t border-gray-200 px-4 md:px-10 lg:px-16">
 
-      {/* ── Product-specific WhatsApp enquiry button ── */}
+      {/* Product-specific WhatsApp enquiry button */}
       <ProductWhatsAppButton
         productName={productData.name}
         price={productData.price}
@@ -395,91 +462,177 @@ const Product = () => {
 
       {/* Product Section */}
       <div className="flex flex-col lg:flex-row gap-12">
-        {/* Images */}
-        <div className="flex-1 flex flex-col-reverse gap-4 sm:flex-row relative">
-          {/* Thumbnails */}
-          <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll sm:w-[18%] w-full gap-3 scrollbar-hide">
-            {productData.image.map((item, index) => (
-              <img
-                key={index}
-                src={item}
-                onClick={() => setImage(item)}
-                alt={productData.name}
-                className={`cursor-pointer rounded-xl border transition-all duration-300 object-cover w-[90px] h-[90px] sm:w-full sm:h-[130px] ${
-                  image === item
-                    ? "border-black scale-[1.05] shadow-lg"
-                    : "border-gray-200 hover:opacity-80 hover:border-gray-400"
-                }`}
-              />
-            ))}
-          </div>
 
-          {/* Main Image + Wishlist + Navigation */}
-          <div className="w-full sm:w-[80%] rounded-2xl overflow-hidden bg-gray-50 shadow-2xl relative group">
-            <div className="relative h-[600px] sm:h-[700px] overflow-hidden">
-              <img
-                src={image}
-                alt={productData.name}
-                className="w-full h-full object-cover"
-              />
+        {/* ── IMAGE GALLERY ── */}
+        <div className="flex-1 flex flex-col gap-4">
+
+          {/* Main image area */}
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
+
+            {/* Thumbnails — vertical on desktop, hidden on mobile (dots used instead) */}
+            <div className="hidden sm:flex sm:flex-col gap-3 sm:w-[90px]">
+              {productData.image.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToImage(index)}
+                  className={`rounded-xl overflow-hidden border-2 transition-all duration-300 w-full aspect-square flex-shrink-0 ${
+                    imageIndex === index
+                      ? "border-black thumb-active scale-[1.03]"
+                      : "border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <img
+                    src={item}
+                    alt={`${productData.name} view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
             </div>
 
-            {/* Flying to cart animation */}
-            {flyingToCart && (
-              <motion.img
-                src={image}
-                alt="Flying to cart"
-                className="absolute top-1/2 left-1/2 w-20 h-20 object-cover rounded-lg z-30 product-fly-to-cart pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              />
-            )}
+            {/* Main image */}
+            <div className="flex-1 relative">
+              <div
+                className="relative rounded-2xl overflow-hidden bg-gray-50 shadow-2xl group"
+                style={{ aspectRatio: "3/4" }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Image with crossfade */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={image}
+                    src={image}
+                    alt={productData.name}
+                    className="w-full h-full object-cover absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                  />
+                </AnimatePresence>
 
-            {/* Wishlist Icon */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              onClick={handleWishlistToggle}
-              className={`absolute top-5 right-5 z-20 p-3 rounded-full shadow-lg transition-all duration-300 ${
-                isInWishlist(productData._id)
-                  ? "bg-black text-white border border-black"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-black hover:text-white"
-              }`}
-              title={isInWishlist(productData._id) ? "Remove from Wishlist" : "Add to Wishlist"}
-            >
-              <Heart
-                size={20}
-                className={`${isInWishlist(productData._id) ? "fill-white" : "fill-none"} ${heartBurst ? "product-heart-burst" : ""}`}
-              />
-            </motion.button>
+                {/* Flying to cart animation */}
+                {flyingToCart && (
+                  <motion.img
+                    src={image}
+                    alt="Flying to cart"
+                    className="absolute top-1/2 left-1/2 w-20 h-20 object-cover rounded-lg z-30 product-fly-to-cart pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  />
+                )}
 
-            {/* Navigation Arrows */}
-            {productData?.image?.length > 1 && (
-              <>
+                {/* Wishlist Icon */}
                 <motion.button
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handlePrevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  title="Previous Image"
+                  whileHover={{ scale: 1.1 }}
+                  onClick={handleWishlistToggle}
+                  className={`absolute top-4 right-4 z-20 p-3 rounded-full shadow-lg transition-all duration-300 ${
+                    isInWishlist(productData._id)
+                      ? "bg-black text-white border border-black"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-black hover:text-white"
+                  }`}
+                  title={isInWishlist(productData._id) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                  </svg>
+                  <Heart
+                    size={20}
+                    className={`${isInWishlist(productData._id) ? "fill-white" : "fill-none"} ${heartBurst ? "product-heart-burst" : ""}`}
+                  />
                 </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleNextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  title="Next Image"
-                >
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </motion.button>
-              </>
-            )}
+
+                {/* Image counter badge — top left */}
+                {totalImages > 1 && (
+                  <div className="absolute top-4 left-4 z-20 img-counter-badge">
+                    {imageIndex + 1} / {totalImages}
+                  </div>
+                )}
+
+                {/* Nav arrows — desktop hover */}
+                {totalImages > 1 && (
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handlePrevImage}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 
+                        hidden sm:flex items-center justify-center
+                        w-9 h-9 rounded-full
+                        bg-white/80 backdrop-blur-sm border border-gray-200 shadow-md
+                        opacity-0 group-hover:opacity-100 transition-all duration-300
+                        hover:bg-black hover:text-white hover:border-black"
+                    >
+                      <ChevronLeft size={18} />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleNextImage}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20
+                        hidden sm:flex items-center justify-center
+                        w-9 h-9 rounded-full
+                        bg-white/80 backdrop-blur-sm border border-gray-200 shadow-md
+                        opacity-0 group-hover:opacity-100 transition-all duration-300
+                        hover:bg-black hover:text-white hover:border-black"
+                    >
+                      <ChevronRight size={18} />
+                    </motion.button>
+                  </>
+                )}
+
+                {/* ── DOT PAGINATION — bottom center, always visible ── */}
+                {totalImages > 1 && (
+                  <div className="absolute bottom-4 left-0 right-0 z-20 flex items-center justify-center gap-1.5">
+                    {productData.image.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => goToImage(idx)}
+                        className={`gallery-dot h-[6px] rounded-full transition-all duration-300 ${
+                          idx === imageIndex
+                            ? "gallery-dot-active bg-black"
+                            : "gallery-dot-inactive bg-black/30"
+                        }`}
+                        style={{
+                          width: idx === imageIndex ? "20px" : "6px",
+                        }}
+                        aria-label={`Image ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile swipe hint — shows only on mobile, fades after first interaction */}
+              {totalImages > 1 && (
+                <p className="sm:hidden text-center text-xs text-gray-400 mt-2 tracking-wide">
+                  {/* ← Swipe to browse {totalImages} photos → */}
+                </p>
+              )}
+            </div>
           </div>
+
+          {/* Mobile thumbnail strip — horizontal scroll */}
+          {totalImages > 1 && (
+            <div className="flex sm:hidden gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {productData.image.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToImage(index)}
+                  className={`flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-300 w-16 h-16 ${
+                    imageIndex === index
+                      ? "border-black thumb-active"
+                      : "border-gray-200 opacity-60"
+                  }`}
+                >
+                  <img
+                    src={item}
+                    alt={`view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Info */}
