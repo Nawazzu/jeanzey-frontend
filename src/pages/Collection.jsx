@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
@@ -100,19 +100,56 @@ const Collection = () => {
   };
 
   // Slider helpers
+  const sliderTrackRef = useRef(null);
+  const dragging = useRef(null); // "min" | "max" | null
+
+  const snapTo50 = (val) => Math.round(val / 50) * 50;
+
   const getPercent = (val) =>
     maxBound === minBound ? 0
-      : Math.round(((val - minBound) / (maxBound - minBound)) * 100);
+      : ((val - minBound) / (maxBound - minBound)) * 100;
 
-  const handleMinThumb = (e) => {
-    const val = Math.min(Number(e.target.value), priceRange[1] - 1);
-    setPriceRange([val, priceRange[1]]);
+  const valFromClientX = (clientX) => {
+    const track = sliderTrackRef.current;
+    if (!track) return 0;
+    const rect = track.getBoundingClientRect();
+    const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+    const raw = minBound + ratio * (maxBound - minBound);
+    return snapTo50(raw);
   };
 
-  const handleMaxThumb = (e) => {
-    const val = Math.max(Number(e.target.value), priceRange[0] + 1);
-    setPriceRange([priceRange[0], val]);
+  const onPointerDown = (thumb) => (e) => {
+    e.preventDefault();
+    dragging.current = thumb;
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
   };
+
+  const onPointerMove = useCallback((e) => {
+    if (!dragging.current) return;
+    const val = valFromClientX(e.clientX);
+    setPriceRange((prev) => {
+      if (dragging.current === "min") {
+        return [Math.min(val, prev[1] - 50), prev[1]];
+      } else {
+        return [prev[0], Math.max(val, prev[0] + 50)];
+      }
+    });
+  }, [minBound, maxBound]);
+
+  const onPointerUp = useCallback(() => {
+    dragging.current = null;
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", onPointerUp);
+  }, [onPointerMove]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+  }, [onPointerMove, onPointerUp]);
 
   const handleApplyPrice = () => {
     setAppliedRange(priceRange);
@@ -130,8 +167,8 @@ const Collection = () => {
   const maxPct = getPercent(priceRange[1]);
   const hasActiveFilters = category.length > 0 || priceApplied;
 
-  // ── Filter Panel — shared by desktop sidebar & mobile drawer ──
-  const FilterContent = () => (
+  // ── Filter Panel — JSX variable (NOT a component) to prevent remount on re-render ──
+  const filterContent = (
     <div className="flex flex-col gap-5">
 
       {/* Categories */}
@@ -169,39 +206,77 @@ const Collection = () => {
 
       <div className="h-px bg-gray-100" />
 
-      {/* Price Range */}
+      {/* Price Range — custom pointer-event slider */}
       <div>
         <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-1">Price Range</p>
-        <p className="text-sm font-medium text-gray-800 mb-4">
+        <p className="text-sm font-medium text-gray-800 mb-5">
           {currency}{priceRange[0].toLocaleString("en-IN")}
           <span className="text-gray-400 mx-1">—</span>
           {currency}{priceRange[1].toLocaleString("en-IN")}
         </p>
 
-        {/* Dual thumb slider */}
-        <div className="jz-slider-wrap">
-          <div className="jz-slider-track" />
+        {/* Track */}
+        <div
+          ref={sliderTrackRef}
+          className="relative mx-3"
+          style={{ height: "4px", background: "#e5e7eb", borderRadius: "2px", touchAction: "none" }}
+        >
+          {/* Filled range */}
           <div
-            className="jz-slider-fill"
-            style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }}
+            style={{
+              position: "absolute",
+              left: `${minPct}%`,
+              width: `${maxPct - minPct}%`,
+              height: "4px",
+              background: "#111",
+              borderRadius: "2px",
+            }}
           />
-          <input
-            type="range"
-            min={minBound} max={maxBound} step={1}
-            value={priceRange[0]}
-            onChange={handleMinThumb}
-            style={{ zIndex: priceRange[0] > maxBound - 100 ? 5 : 3 }}
+
+          {/* Min thumb */}
+          <div
+            onPointerDown={onPointerDown("min")}
+            style={{
+              position: "absolute",
+              left: `${minPct}%`,
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "22px",
+              height: "22px",
+              borderRadius: "50%",
+              background: "#111",
+              border: "3px solid #fff",
+              boxShadow: "0 1px 8px rgba(0,0,0,0.3)",
+              cursor: "grab",
+              touchAction: "none",
+              userSelect: "none",
+              zIndex: 3,
+            }}
           />
-          <input
-            type="range"
-            min={minBound} max={maxBound} step={1}
-            value={priceRange[1]}
-            onChange={handleMaxThumb}
-            style={{ zIndex: 4 }}
+
+          {/* Max thumb */}
+          <div
+            onPointerDown={onPointerDown("max")}
+            style={{
+              position: "absolute",
+              left: `${maxPct}%`,
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "22px",
+              height: "22px",
+              borderRadius: "50%",
+              background: "#111",
+              border: "3px solid #fff",
+              boxShadow: "0 1px 8px rgba(0,0,0,0.3)",
+              cursor: "grab",
+              touchAction: "none",
+              userSelect: "none",
+              zIndex: 4,
+            }}
           />
         </div>
 
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-6">
           <button
             type="button"
             onClick={handleApplyPrice}
@@ -242,76 +317,7 @@ const Collection = () => {
   return (
     <>
       <style>{`
-        .jz-slider-wrap {
-          position: relative;
-          height: 32px;
-          margin: 0 4px;
-        }
-        .jz-slider-track {
-          position: absolute;
-          top: 50%; left: 0; right: 0;
-          transform: translateY(-50%);
-          height: 3px;
-          background: #e5e7eb;
-          border-radius: 2px;
-          z-index: 1;
-        }
-        .jz-slider-fill {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          height: 3px;
-          background: #111;
-          border-radius: 2px;
-          z-index: 2;
-          pointer-events: none;
-        }
-        .jz-slider-wrap input[type="range"] {
-          position: absolute;
-          width: 100%;
-          top: 50%;
-          transform: translateY(-50%);
-          height: 3px;
-          background: transparent;
-          -webkit-appearance: none;
-          appearance: none;
-          pointer-events: none;
-          outline: none;
-          margin: 0;
-          padding: 0;
-          touch-action: none;
-        }
-        .jz-slider-wrap input[type="range"]::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: #111;
-          border: 3px solid #fff;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.3);
-          pointer-events: all;
-          cursor: grab;
-          touch-action: none;
-        }
-        .jz-slider-wrap input[type="range"]:active::-webkit-slider-thumb {
-          cursor: grabbing;
-          box-shadow: 0 2px 14px rgba(0,0,0,0.45);
-        }
-        .jz-slider-wrap input[type="range"]::-moz-range-thumb {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: #111;
-          border: 3px solid #fff;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.3);
-          pointer-events: all;
-          cursor: grab;
-        }
         /* Slide-in drawer animation */
-        .drawer-enter {
-          transform: translateX(-100%);
-        }
         .drawer-open {
           transform: translateX(0);
           transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -347,7 +353,7 @@ const Collection = () => {
 
             {/* Scrollable filter content */}
             <div className="flex-1 overflow-y-auto px-5 py-5">
-              <FilterContent />
+              {filterContent}
             </div>
 
             {/* Footer — apply + close */}
@@ -379,7 +385,7 @@ const Collection = () => {
           <div>
             <p className="my-2 text-xl font-medium tracking-wide uppercase">FILTERS</p>
             <div className="mt-4">
-              <FilterContent />
+              {filterContent}
             </div>
           </div>
         </div>
