@@ -41,7 +41,7 @@ const LatestCollection = () => {
       <div className="text-center py-12 max-w-4xl mx-auto">
         <div ref={titleRef}>
           {/* Eyebrow */}
-          <p className="text-[10px] sm:text-xs tracking-[0.35em] uppercase text-black-400 font-medium mb-5">
+          <p className="text-[10px] sm:text-xs tracking-[0.35em] uppercase text-gray-400 font-medium mb-5">
             New Arrivals
           </p>
           {/* Main heading */}
@@ -102,6 +102,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   const touchStartY = useRef(null);
   const touchStartX = useRef(null);
   const touchMoved = useRef(false);
+  const wishlistTapped = useRef(false); // ← tracks if heart was the touch target
 
   const handleHover = (state) => {
     if (image?.length > 1) setCurrentImageIndex(state ? 1 : 0);
@@ -112,6 +113,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   };
 
   const handleTouchStart = (e) => {
+    wishlistTapped.current = false;
     touchStartY.current = e.touches[0].clientY;
     touchStartX.current = e.touches[0].clientX;
     touchMoved.current = false;
@@ -125,6 +127,14 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   };
 
   const handleTouchEnd = (e) => {
+    // If the heart button was tapped, do nothing — wishlist handler already fired
+    if (wishlistTapped.current) {
+      wishlistTapped.current = false;
+      touchStartY.current = null;
+      touchStartX.current = null;
+      touchMoved.current = false;
+      return;
+    }
     if (!touchMoved.current) {
       if (image?.length > 1 && currentImageIndex === 0) {
         setCurrentImageIndex(1);
@@ -141,6 +151,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    wishlistTapped.current = true; // ← signal to handleTouchEnd
     toggleWishlist(id);
   };
 
