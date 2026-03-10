@@ -1,6 +1,5 @@
 import React, { useContext, useState, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 
 const LuxuryProductCard = ({ id, image, name, price }) => {
@@ -8,16 +7,19 @@ const LuxuryProductCard = ({ id, image, name, price }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const liked = isInWishlist(id);
 
-  // ── Touch scroll detection ──
+  // ── Touch tracking ──
   const touchStartY = useRef(null);
   const touchStartX = useRef(null);
   const touchMoved = useRef(false);
+  const wishlistTapped = useRef(false);
 
+  // Hover image swap — desktop only (mouse events)
   const handleHover = (state) => {
     if (image?.length > 1) setCurrentImageIndex(state ? 1 : 0);
   };
 
   const handleTouchStart = (e) => {
+    wishlistTapped.current = false;
     touchStartY.current = e.touches[0].clientY;
     touchStartX.current = e.touches[0].clientX;
     touchMoved.current = false;
@@ -33,15 +35,17 @@ const LuxuryProductCard = ({ id, image, name, price }) => {
   };
 
   const handleTouchEnd = (e) => {
+    // Heart was tapped — skip navigation, wishlist already toggled
+    if (wishlistTapped.current) {
+      wishlistTapped.current = false;
+      touchStartY.current = null;
+      touchStartX.current = null;
+      touchMoved.current = false;
+      return;
+    }
+    // Clean tap (not a scroll) — always navigate
     if (!touchMoved.current) {
-      // Real tap — toggle image preview on first tap, navigate on second
-      if (image?.length > 1 && currentImageIndex === 0) {
-        e.preventDefault();
-        setCurrentImageIndex(1);
-        setTimeout(() => setCurrentImageIndex(0), 600);
-      } else {
-        navigate(`/product/${id}`);
-      }
+      navigate(`/product/${id}`);
     }
     touchStartY.current = null;
     touchStartX.current = null;
@@ -51,17 +55,18 @@ const LuxuryProductCard = ({ id, image, name, price }) => {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    wishlistTapped.current = true;
     toggleWishlist(id);
   };
 
   return (
-    <Link
-      to={`/product/${id}`}
+    <div
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onClick={() => navigate(`/product/${id}`)}
       className="group block cursor-pointer"
       style={{ touchAction: "pan-y" }}
     >
@@ -82,6 +87,7 @@ const LuxuryProductCard = ({ id, image, name, price }) => {
 
         {/* Heart Icon */}
         <button
+          onTouchStart={(e) => { e.stopPropagation(); wishlistTapped.current = true; }}
           onClick={handleWishlist}
           className={`absolute top-4 right-4 p-3 rounded-full transition-all duration-300 border ${
             liked
@@ -103,7 +109,7 @@ const LuxuryProductCard = ({ id, image, name, price }) => {
           {price}
         </p>
       </div>
-    </Link>
+    </div>
   );
 };
 

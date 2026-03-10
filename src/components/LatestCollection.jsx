@@ -98,12 +98,13 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const liked = isInWishlist(id);
 
-  // ── Touch scroll detection ──
+  // ── Touch tracking ──
   const touchStartY = useRef(null);
   const touchStartX = useRef(null);
   const touchMoved = useRef(false);
-  const wishlistTapped = useRef(false); // ← tracks if heart was the touch target
+  const wishlistTapped = useRef(false);
 
+  // Hover image swap — desktop only (mouse events)
   const handleHover = (state) => {
     if (image?.length > 1) setCurrentImageIndex(state ? 1 : 0);
   };
@@ -127,7 +128,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   };
 
   const handleTouchEnd = (e) => {
-    // If the heart button was tapped, do nothing — wishlist handler already fired
+    // Heart was tapped — skip navigation, wishlist already toggled
     if (wishlistTapped.current) {
       wishlistTapped.current = false;
       touchStartY.current = null;
@@ -135,13 +136,9 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
       touchMoved.current = false;
       return;
     }
+    // Clean tap (not a scroll) — always navigate
     if (!touchMoved.current) {
-      if (image?.length > 1 && currentImageIndex === 0) {
-        setCurrentImageIndex(1);
-        setTimeout(() => setCurrentImageIndex(0), 600);
-      } else {
-        navigate(`/product/${id}`);
-      }
+      navigate(`/product/${id}`);
     }
     touchStartY.current = null;
     touchStartX.current = null;
@@ -151,7 +148,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    wishlistTapped.current = true; // ← signal to handleTouchEnd
+    wishlistTapped.current = true;
     toggleWishlist(id);
   };
 
@@ -180,6 +177,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
           />
         ))}
         <button
+          onTouchStart={(e) => { e.stopPropagation(); wishlistTapped.current = true; }}
           onClick={handleWishlist}
           className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 border ${
             liked
