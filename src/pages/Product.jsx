@@ -198,7 +198,7 @@ const ProductWhatsAppButton = ({ productName, price, category, currency }) => {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Enquire about this product on WhatsApp"
-      className="fixed bottom-8 right-6 z-50 bg-black/90 backdrop-blur-sm border border-white/20 text-white rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/70 group flex items-center justify-center"
+      className="fixed bottom-6 right-6 z-50 bg-black/90 backdrop-blur-sm border border-white/20 text-white rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/70 group flex items-center justify-center"
     >
       <img
         src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"

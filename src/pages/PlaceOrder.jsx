@@ -37,24 +37,8 @@ const PlaceOrder = () => {
     delivery_fee,
     products,
     userData,
+    glassToast,
   } = useContext(ShopContext);
-
-  const glassToast = (message, type = "info") =>
-    toast[type](message, {
-      style: {
-        background: "rgba(15,15,15,0.75)",
-        color: "#fff",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.2)",
-        borderRadius: "16px",
-        fontFamily: "Poppins, sans-serif",
-        padding: "12px 16px",
-      },
-      progressStyle: { background: "#fff" },
-      icon: false,
-      autoClose: 2000,
-      position: "top-right",
-    });
 
   useEffect(() => {
     if (token) fetchAddresses();
@@ -407,9 +391,126 @@ const PlaceOrder = () => {
             {/* Only this button is type="submit" */}
             <button
               type="submit"
-              className="bg-gradient-to-r from-black via-gray-900 to-gray-800 text-white px-16 py-3 rounded-md text-sm tracking-wide shadow-md hover:scale-[1.02] transition-all duration-300 mx-auto"
+              className="relative overflow-hidden mx-auto px-16 py-3 rounded-md text-sm tracking-widest font-medium shadow-lg transition-all duration-500 group"
+              style={{
+                background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)",
+                backgroundSize: "200% 200%",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.08)",
+                letterSpacing: "0.2em",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundPosition = "right center";
+                e.currentTarget.style.boxShadow = "0 0 0 1px rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.4)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundPosition = "left center";
+                e.currentTarget.style.boxShadow = "";
+              }}
+              onMouseDown={e => {
+                e.currentTarget.style.transform = "scale(0.97)";
+                // inject keyframes once
+                if (!document.getElementById("po-style")) {
+                  const s = document.createElement("style");
+                  s.id = "po-style";
+                  s.textContent = `
+                    @keyframes poSheen {
+                      0%   { left: -120%; }
+                      100% { left: 140%; }
+                    }
+                    @keyframes poGlow {
+                      0%,100% { opacity: 0; }
+                      50%     { opacity: 1; }
+                    }
+                    .po-sheen {
+                      position: absolute;
+                      top: 0; bottom: 0;
+                      width: 60%;
+                      background: linear-gradient(
+                        105deg,
+                        transparent 20%,
+                        rgba(255,255,255,0.18) 50%,
+                        transparent 80%
+                      );
+                      animation: poSheen 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+                      pointer-events: none;
+                      z-index: 2;
+                    }
+                    .po-glow {
+                      position: absolute;
+                      inset: 0;
+                      border-radius: inherit;
+                      background: radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, transparent 70%);
+                      animation: poGlow 0.5s ease forwards;
+                      pointer-events: none;
+                      z-index: 1;
+                    }
+                  `;
+                  document.head.appendChild(s);
+                }
+                // sheen sweep
+                const sheen = document.createElement("span");
+                sheen.className = "po-sheen";
+                e.currentTarget.appendChild(sheen);
+                setTimeout(() => sheen.remove(), 750);
+                // glow pulse
+                const glow = document.createElement("span");
+                glow.className = "po-glow";
+                e.currentTarget.appendChild(glow);
+                setTimeout(() => glow.remove(), 550);
+              }}
+              onMouseUp={e => {
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+              onTouchStart={e => {
+                e.currentTarget.style.transform = "scale(0.97)";
+                if (!document.getElementById("po-style")) {
+                  const s = document.createElement("style");
+                  s.id = "po-style";
+                  s.textContent = `
+                    @keyframes poSheen {
+                      0%   { left: -120%; }
+                      100% { left: 140%; }
+                    }
+                    @keyframes poGlow {
+                      0%,100% { opacity: 0; }
+                      50%     { opacity: 1; }
+                    }
+                    .po-sheen {
+                      position: absolute; top: 0; bottom: 0; width: 60%;
+                      background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.18) 50%, transparent 80%);
+                      animation: poSheen 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+                      pointer-events: none; z-index: 2;
+                    }
+                    .po-glow {
+                      position: absolute; inset: 0; border-radius: inherit;
+                      background: radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, transparent 70%);
+                      animation: poGlow 0.5s ease forwards;
+                      pointer-events: none; z-index: 1;
+                    }
+                  `;
+                  document.head.appendChild(s);
+                }
+                const sheen = document.createElement("span");
+                sheen.className = "po-sheen";
+                e.currentTarget.appendChild(sheen);
+                setTimeout(() => sheen.remove(), 750);
+                const glow = document.createElement("span");
+                glow.className = "po-glow";
+                e.currentTarget.appendChild(glow);
+                setTimeout(() => glow.remove(), 550);
+              }}
+              onTouchEnd={e => {
+                e.currentTarget.style.transform = "scale(1)";
+              }}
             >
-              PLACE ORDER
+              {/* Static thin top shimmer line */}
+              <span style={{
+                position: "absolute", top: 0, left: "10%", right: "10%", height: "1px",
+                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
+                pointerEvents: "none", zIndex: 3,
+              }} />
+              <span className="relative z-10 tracking-[0.25em]">PLACE ORDER</span>
             </button>
 
             <div className="mt-12 p-6 border border-gray-300 rounded-2xl bg-white/70 backdrop-blur-lg text-center shadow-lg hover:shadow-2xl transition-all duration-500 max-w-md w-full">
