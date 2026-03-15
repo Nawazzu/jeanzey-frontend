@@ -11,6 +11,11 @@ const HeroSplit = () => {
 
   return (
     <section className="relative w-screen h-screen flex flex-col md:flex-row overflow-hidden -mx-4 sm:-mx-[5vw] md:-mx-[7vw] lg:-mx-[9vw] left-0 right-0">
+      {/* SEO H1 — visually positioned over the hero, styled to blend in */}
+      <h1 className="sr-only">
+        Jeanzey — Premium Fashion Store Mumbai | Men's &amp; Women's Jeans, Shirts &amp; T-Shirts
+      </h1>
+
       {/* Left Side Image */}
       <div className="relative flex-1 h-1/2 md:h-full overflow-hidden">
         <picture>

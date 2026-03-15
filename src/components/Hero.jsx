@@ -67,11 +67,11 @@ const Hero = () => {
             Mumbai's Luxury Destination
           </div>
           
-          {/* Main Heading */}
-          <h1 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight tracking-wide'>
+          {/* Main Heading — downgraded to h2 since HeroSplit holds the page H1 */}
+          <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight tracking-wide'>
             <span className='italic font-serif'>Handcrafted Luxury</span>,<br className='hidden sm:block' />
             <span className='font-semibold'>Delivered to Your Doorstep</span>
-          </h1>
+          </h2>
           
           {/* Description */}
           <p className='text-[11px] sm:text-xs md:text-sm font-light text-gray-700 leading-relaxed tracking-wide'>

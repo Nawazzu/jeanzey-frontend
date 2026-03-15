@@ -23,6 +23,8 @@ export default defineConfig({
           'vendor-email': ['@emailjs/browser'],
           // Toast
           'vendor-toast': ['react-toastify'],
+          //gsap
+          'vendor-gsap': ['gsap'],
         },
       },
     },
