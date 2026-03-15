@@ -42,6 +42,12 @@ const BestSeller = () => {
     >
       {/* ── Premium Heading Block ── */}
       <div className="text-center py-12 max-w-4xl mx-auto">
+
+        {/* Visually hidden H2 for SEO */}
+        <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
+          Best Sellers — Most Popular Men's &amp; Women's Fashion | Jean-Zey Mumbai
+        </h2>
+
         <div ref={titleRef}>
           {/* Eyebrow */}
           <p className="text-[10px] sm:text-xs tracking-[0.35em] uppercase text-black-400 font-medium mb-5">

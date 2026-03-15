@@ -7,8 +7,7 @@ import { ArrowLeft, Star, MessageSquare, Ruler, Heart, X, ChevronLeft, ChevronRi
 import axios from "axios";
 import SkeletonProductPage from "../components/SkeletonProductPage";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Helmet } from "react-helmet-async";
 
 const scrollbarStyles = `
   .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -435,6 +434,34 @@ const Product = () => {
   const totalImages = productData?.image?.length || 0;
 
   return productData ? (
+    <>
+      <Helmet>
+        <title>{productData.name} | Jean-Zey Mumbai</title>
+        <meta name="description" content={`Buy ${productData.name} online from Jean-Zey Mumbai. ${productData.description?.slice(0, 120) || 'Premium fashion delivered across Mumbai.'}`} />
+        <link rel="canonical" href={`https://jeanzey-frontend.vercel.app/product/${productId}`} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": productData.name,
+          "description": productData.description,
+          "image": productData.image?.[0],
+          "brand": { "@type": "Brand", "name": "Jean-Zey" },
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "INR",
+            "price": productData.price,
+            "availability": isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+            "seller": { "@type": "Organization", "name": "Jean-Zey" }
+          },
+          ...(averageRating && reviews.length > 0 ? {
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": averageRating,
+              "reviewCount": reviews.length
+            }
+          } : {})
+        })}</script>
+      </Helmet>
     <div className="bg-white text-gray-900 min-h-screen border-t border-gray-200 px-4 md:px-10 lg:px-16">
 
       {/* Product-specific WhatsApp enquiry button */}
@@ -907,6 +934,7 @@ const Product = () => {
         <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
       </div>
     </div>
+    </>
   ) : (
     <SkeletonProductPage />
   );

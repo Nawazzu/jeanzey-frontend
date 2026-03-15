@@ -39,6 +39,10 @@ const LatestCollection = () => {
     <div id="latest-collection" className="my-20 px-4 sm:px-8 lg:px-16">
       {/* ── Premium Heading Block ── */}
       <div className="text-center py-12 max-w-4xl mx-auto">
+        {/* Visually hidden H2 for SEO */}
+        <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
+          Latest Collections — New Arrivals in Men's &amp; Women's Fashion | Jean-Zey Mumbai
+        </h2>
         <div ref={titleRef}>
           {/* Eyebrow */}
           <p className="text-[10px] sm:text-xs tracking-[0.35em] uppercase text-gray-400 font-medium mb-5">

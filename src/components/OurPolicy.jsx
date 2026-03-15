@@ -6,13 +6,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import amazon from "../assets/amazon.png";
 import sony from "../assets/sony.png";
 import canon from "../assets/canon.png";
-import nikon from "../assets/nikon.png";
-import polaroid from "../assets/polaroid.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const OurPolicy = () => {
-  const companyLogos = [amazon, sony, canon, nikon, polaroid];
+  const companyLogos = [amazon, sony, canon];
   
   // Refs for animation
   const titleRef = useRef(null);

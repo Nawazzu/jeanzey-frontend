@@ -1,0 +1,30 @@
+# Jean-Zey
+
+> Mumbai's premium fashion brand offering jeans, shirts, t-shirts and combos for men and women.
+
+## About
+Jean-Zey is a luxury fashion brand based in Mumbai, India. We deliver premium clothing directly to customers across Mumbai with free shipping, open box delivery, and a personal touch on every order.
+
+## Products
+- Men's and Women's Jeans
+- Shirts (formal and casual)
+- T-Shirts
+- Combo outfits
+- Bags
+- Perfumes
+
+## Key Information
+- Location: Mumbai, Maharashtra, India
+- Delivery: Free delivery exclusively across Mumbai
+- Payment: Cash, UPI, or Digital payment at delivery (COD)
+- Open Box Delivery: Orders unsealed in customer's presence
+- Contact: +91-9987683105
+
+## Pages
+- Home: https://jeanzey-frontend.vercel.app/
+- Collection: https://jeanzey-frontend.vercel.app/collection
+- About: https://jeanzey-frontend.vercel.app/about
+- Contact: https://jeanzey-frontend.vercel.app/contact
+- Size Guide: https://jeanzey-frontend.vercel.app/size-guide
+- Limited Editions: https://jeanzey-frontend.vercel.app/limited-editions
+- Shipping & Returns: https://jeanzey-frontend.vercel.app/shipping-returns

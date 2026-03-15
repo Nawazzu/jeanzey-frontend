@@ -115,7 +115,7 @@ const Hero = () => {
           <img
             src="/images/poster12.jpg"
             alt='Luxury Fashion Delivered in Mumbai'
-            loading="eager"
+            loading="lazy"
             className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-105'
           />
         </picture>

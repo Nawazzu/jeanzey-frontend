@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Title from "../components/Title";
@@ -57,6 +58,17 @@ const About = () => {
 
   return (
     <>
+      <Helmet>
+        <title>About Jean-Zey | Premium Fashion Brand Mumbai</title>
+        <meta name="description" content="Learn about Jean-Zey, Mumbai's premium fashion brand. Discover our story, heritage and commitment to luxury fashion for men and women." />
+        <link rel="canonical" href="https://jeanzey-frontend.vercel.app/about" />
+      </Helmet>
+
+      {/* Visually hidden H2 for SEO */}
+      <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
+        About Jean-Zey — Mumbai's Premium Fashion Brand | Our Story &amp; Heritage
+      </h2>
+
       <div className="bg-white text-gray-900">
         {/* Hero Section with Luxury Title */}
         <div

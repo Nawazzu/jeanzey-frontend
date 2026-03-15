@@ -325,10 +325,16 @@ const Collection = () => {
       `}</style>
 
       <Helmet>
-        <title>Shop All Collection – Shirts, Jeans, T-Shirts | Jeanzey</title>
-        <meta name="description" content="Browse Jeanzey's full collection of men's and women's luxury fashion. Filter by shirts, jeans, t-shirts and combo outfits. Free delivery across India." />
-        <link rel="canonical" href="https://yourdomain.com/collection" />
+        <title>Shop All Collection – Shirts, Jeans, T-Shirts | Jean-Zey</title>
+        <meta name="description" content="Browse Jean-Zey's full collection of men's and women's fashion. Filter by shirts, jeans, t-shirts and combo outfits. Free delivery across Mumbai." />
+        <meta name="keywords" content="buy jeans Mumbai, shirts online Mumbai, t-shirts, combo outfits, Jean-Zey collection, fashion Mumbai" />
+        <link rel="canonical" href="https://jeanzey-frontend.vercel.app/collection" />
       </Helmet>
+
+      {/* Visually hidden H2 for SEO */}
+      <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
+        Shop Men's &amp; Women's Fashion — Jeans, Shirts, T-Shirts &amp; Combos | Jean-Zey Mumbai
+      </h2>
 
       {/* ── MOBILE LEFT DRAWER ── */}
       {showFilter && (
