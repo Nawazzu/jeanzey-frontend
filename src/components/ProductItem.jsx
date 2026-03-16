@@ -2,6 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+// PERFORMANCE: Replaced Font Awesome CDN icons with react-icons (already installed)
+// This allows removal of the Font Awesome CDN link from index.html (saves 900ms render block)
+// To revert: remove these imports and restore the <i className="fab fa-..."> tags below
+import { FaWhatsapp, FaFacebook, FaInstagram } from 'react-icons/fa';
 
 const ProductItem = ({ id, image, name, price }) => {
   const { currency, isInWishlist, toggleWishlist } = useContext(ShopContext);
@@ -137,7 +141,7 @@ const ProductItem = ({ id, image, name, price }) => {
           className="text-gray-400 hover:text-green-600 transition-colors duration-300"
           title="Share on WhatsApp"
         >
-          <i className="fab fa-whatsapp text-base"></i>
+          <FaWhatsapp size={16} />
         </a>
         <a
           href={facebook}
@@ -147,7 +151,7 @@ const ProductItem = ({ id, image, name, price }) => {
           className="text-gray-400 hover:text-blue-600 transition-colors duration-300"
           title="Share on Facebook"
         >
-          <i className="fab fa-facebook text-base"></i>
+          <FaFacebook size={16} />
         </a>
         <a
           href={instagram}
@@ -157,7 +161,7 @@ const ProductItem = ({ id, image, name, price }) => {
           className="text-gray-400 hover:text-pink-500 transition-colors duration-300"
           title="Share on Instagram"
         >
-          <i className="fab fa-instagram text-base"></i>
+          <FaInstagram size={16} />
         </a>
       </div>
     </div>
