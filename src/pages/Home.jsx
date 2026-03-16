@@ -9,13 +9,16 @@ import LatestCollection from '../components/LatestCollection'
 import MumbaiNoticeBar from '../components/MumbaiNoticeBar'
 import AnimatedBanner from '../components/AnimatedBanner'
 import WhatsAppButton from '../components/WhatsAppButton'
+// PERFORMANCE: VideoGallery moved out of lazy loading — it has autoPlay videos that
+// remount on every Suspense retry, causing 16.mp4 to download 6x repeatedly
+// Eager loading prevents the remount cycle
+import VideoGallery from '../components/VideoGallery'
 
 // Below-fold components — lazy loaded to reduce initial render
 const HoverTextCard = React.lazy(() => import('../components/HoverTextCard '))
 const FadeCarouselWithCaptions = React.lazy(() => import('../components/FadeCarouselWithCaptions'))
 const Complimentary = React.lazy(() => import('../components/Complimentary'))
 const PremiumTimeline = React.lazy(() => import('../components/PremiumTimeline'))
-const VideoGallery = React.lazy(() => import('../components/VideoGallery'))
 const DenimSplit = React.lazy(() => import('../components/DenimSplit'))
 const BestSeller = React.lazy(() => import('../components/BestSeller'))
 const Testimonials = React.lazy(() => import('../components/Testimonials'))
@@ -84,10 +87,15 @@ const Home = () => {
 
         <PremiumTimeline/>
 
-        <section aria-label="Video Gallery">
-          <h2 className="sr-only">Video Gallery</h2>
-          <VideoGallery/>
-        </section>
+      </Suspense>
+
+      {/* VideoGallery outside Suspense — prevents autoPlay videos from remounting repeatedly */}
+      <section aria-label="Video Gallery">
+        <h2 className="sr-only">Video Gallery</h2>
+        <VideoGallery/>
+      </section>
+
+      <Suspense fallback={null}>
 
         {/* <PhotoGallery/> */}
         <DenimSplit/>
@@ -105,7 +113,7 @@ const Home = () => {
           <Testimonials/>
         </section>
 
-       
+    
 
         {/* Internal links for SEO */}
         <nav aria-label="Shop categories" style={{ display: 'none' }}>

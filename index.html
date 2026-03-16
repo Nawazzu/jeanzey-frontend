@@ -17,6 +17,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Faster+One&display=swap" rel="stylesheet" />
 
+    <!-- PERFORMANCE: Preconnect to backend and Cloudinary — saves ~600ms on first requests -->
+    <link rel="preconnect" href="https://jeanzey-backend.onrender.com" />
+    <link rel="preconnect" href="https://res.cloudinary.com" />
+
     <!-- Theme color for mobile browsers -->
     <meta name="theme-color" content="#78350f" />
 
@@ -163,15 +167,16 @@
     }
     </script>
 
-    <!-- Google Analytics GA4 (item 5) -->
-    <!-- REPLACE BOTH instances of G-XXXXXXXXXX with your Measurement ID from analytics.google.com -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <!-- Google Analytics GA4 -->
+    <!-- PERFORMANCE: Commented out until real Measurement ID is available -->
+    <!-- To enable: replace G-XXXXXXXXXX with your real ID from analytics.google.com and uncomment -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-XXXXXXXXXX');
-    </script>
+    </script> -->
 
   </head>
 
@@ -186,9 +191,10 @@
     <!-- Uncomment this line to restore global Razorpay loading -->
     <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
 
-    <!-- Facebook Pixel (item 4) -->
-    <!-- REPLACE BOTH instances of YOUR_PIXEL_ID with your Pixel ID from business.facebook.com/events/manager -->
-    <script>
+    <!-- Facebook Pixel -->
+    <!-- PERFORMANCE: Commented out until real Pixel ID is available -->
+    <!-- To enable: replace YOUR_PIXEL_ID with your real ID from business.facebook.com/events/manager and uncomment -->
+    <!-- <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -204,7 +210,7 @@
       <img height="1" width="1" style="display:none"
         src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"
       />
-    </noscript>
+    </noscript> -->
 
   </body>
 </html>
