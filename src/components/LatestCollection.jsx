@@ -156,6 +156,14 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
     toggleWishlist(id);
   };
 
+  // PERFORMANCE: Cloudinary auto-format + auto-quality + resize transformation
+  // Converts PNG/JPG → WebP automatically and resizes to 400px width (actual display size)
+  // To revert: replace the getOptimisedUrl function with just: const getOptimisedUrl = (url) => url;
+  const getOptimisedUrl = (url) => {
+    if (!url || !url.includes('res.cloudinary.com')) return url;
+    return url.replace('/upload/', '/upload/f_auto,q_auto,w_400/');
+  };
+
   return (
     <div
       onMouseEnter={() => handleHover(true)}
@@ -171,7 +179,7 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
         {image?.map((img, i) => (
           <img
             key={i}
-            src={img}
+            src={getOptimisedUrl(img)}
             alt={name}
             className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
               i === currentImageIndex

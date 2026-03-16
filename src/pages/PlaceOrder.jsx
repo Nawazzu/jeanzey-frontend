@@ -40,6 +40,19 @@ const PlaceOrder = () => {
     glassToast,
   } = useContext(ShopContext);
 
+  // PERFORMANCE: Razorpay loaded dynamically here instead of globally in index.html
+  // This prevents 650KB of Razorpay JS from blocking every page on the site
+  // To restore global loading: uncomment the script tag in index.html and remove this useEffect
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   useEffect(() => {
     if (token) fetchAddresses();
   }, [token]);

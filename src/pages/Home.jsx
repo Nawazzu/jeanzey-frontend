@@ -1,24 +1,31 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+
+// Above-fold components — loaded immediately
+import HeroSplit from '../components/HeroSplit'
 import Hero from '../components/Hero'
 import LatestCollection from '../components/LatestCollection'
-import BestSeller from '../components/BestSeller'
-import OurPolicy from '../components/OurPolicy'
-import HeroReversed from '../components/HeroReversed'
-import FadeCarouselWithCaptions from '../components/FadeCarouselWithCaptions'
-import PhotoGallery from '../components/PhotoGallery'
-import VideoGallery from '../components/VideoGallery'
-import DenimSplit from '../components/DenimSplit'
-import Testimonials from '../components/Testimonials'
-import HeroVideo from '../components/HeroVideo'
-import WhatsAppButton from '../components/WhatsAppButton'
-import HeroSplit from '../components/HeroSplit'
-import HoverTextCard from '../components/HoverTextCard '
-import PremiumTimeline from '../components/PremiumTimeline'
-import Complimentary from '../components/Complimentary'
-import AnimatedBanner from '../components/AnimatedBanner'
 import MumbaiNoticeBar from '../components/MumbaiNoticeBar'
+import AnimatedBanner from '../components/AnimatedBanner'
+import WhatsAppButton from '../components/WhatsAppButton'
+
+// Below-fold components — lazy loaded to reduce initial render
+const HoverTextCard = React.lazy(() => import('../components/HoverTextCard '))
+const FadeCarouselWithCaptions = React.lazy(() => import('../components/FadeCarouselWithCaptions'))
+const Complimentary = React.lazy(() => import('../components/Complimentary'))
+const PremiumTimeline = React.lazy(() => import('../components/PremiumTimeline'))
+const VideoGallery = React.lazy(() => import('../components/VideoGallery'))
+const DenimSplit = React.lazy(() => import('../components/DenimSplit'))
+const BestSeller = React.lazy(() => import('../components/BestSeller'))
+const Testimonials = React.lazy(() => import('../components/Testimonials'))
+
+
+// Unused imports kept as comments to preserve original structure
+// import OurPolicy from '../components/OurPolicy'
+// import HeroReversed from '../components/HeroReversed'
+// import PhotoGallery from '../components/PhotoGallery'
+// import HeroVideo from '../components/HeroVideo'
 
 const Home = () => {
   return (
@@ -49,6 +56,7 @@ const Home = () => {
         Jeanzey — Premium Fashion Store Mumbai | Men's &amp; Women's Jeans, Shirts &amp; T-Shirts
       </h1>
 
+      {/* Above-fold — loads immediately */}
       <HeroSplit/>
       {/* <HeroVideo/> */}
       <Hero />
@@ -58,51 +66,58 @@ const Home = () => {
         <LatestCollection/>
       </section>
 
-        <MumbaiNoticeBar/>
-      <HoverTextCard/>
-      <FadeCarouselWithCaptions/>
-      {/* <HeroReversed/> */}
+      <MumbaiNoticeBar/>
       <AnimatedBanner/>
 
-      <section aria-label="Our Services">
-        <h2 className="sr-only">Our Services</h2>
-        <Complimentary/>
-      </section>
+      {/* Below-fold — lazy loaded */}
+      <Suspense fallback={null}>
 
-      <PremiumTimeline/>
+        <HoverTextCard/>
+        <FadeCarouselWithCaptions/>
 
-      <section aria-label="Video Gallery">
-        <h2 className="sr-only">Video Gallery</h2>
-        <VideoGallery/>
-      </section>
+        {/* <HeroReversed/> */}
 
-       {/* <PhotoGallery/> */}
-       <DenimSplit/>
+        <section aria-label="Our Services">
+          <h2 className="sr-only">Our Services</h2>
+          <Complimentary/>
+        </section>
 
-      <section aria-label="Best Sellers">
-        <h2 className="sr-only">Best Sellers</h2>
-        <BestSeller/>
-      </section>
+        <PremiumTimeline/>
 
-      <AnimatedBanner/>
-      {/* <OurPolicy/> */}
+        <section aria-label="Video Gallery">
+          <h2 className="sr-only">Video Gallery</h2>
+          <VideoGallery/>
+        </section>
 
-      <section aria-label="Customer Testimonials">
-        <h2 className="sr-only">Customer Testimonials</h2>
-        <Testimonials/>
-      </section>
+        {/* <PhotoGallery/> */}
+        <DenimSplit/>
 
-  
+        <section aria-label="Best Sellers">
+          <h2 className="sr-only">Best Sellers</h2>
+          <BestSeller/>
+        </section>
 
-      {/* Internal links for SEO */}
-      <nav aria-label="Shop categories" style={{ display: 'none' }}>
-        <Link to="/collection">Shop All</Link>
-        <Link to="/collection">Men's Collection</Link>
-        <Link to="/collection">Women's Collection</Link>
-        <Link to="/about">About Jeanzey</Link>
-        <Link to="/contact">Contact Us</Link>
-        <Link to="/limited-editions">Limited Editions</Link>
-      </nav>
+        <AnimatedBanner/>
+        {/* <OurPolicy/> */}
+
+        <section aria-label="Customer Testimonials">
+          <h2 className="sr-only">Customer Testimonials</h2>
+          <Testimonials/>
+        </section>
+
+       
+
+        {/* Internal links for SEO */}
+        <nav aria-label="Shop categories" style={{ display: 'none' }}>
+          <Link to="/collection">Shop All</Link>
+          <Link to="/collection">Men's Collection</Link>
+          <Link to="/collection">Women's Collection</Link>
+          <Link to="/about">About Jeanzey</Link>
+          <Link to="/contact">Contact Us</Link>
+          <Link to="/limited-editions">Limited Editions</Link>
+        </nav>
+
+      </Suspense>
 
       <WhatsAppButton/>
     </div>

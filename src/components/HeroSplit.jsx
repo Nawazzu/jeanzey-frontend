@@ -20,10 +20,13 @@ const HeroSplit = () => {
       <div className="relative flex-1 h-1/2 md:h-full overflow-hidden">
         <picture>
           <source srcSet="/images/poster1.webp" type="image/webp" />
+          {/* PERFORMANCE: removed loading="lazy" and added fetchpriority="high" */}
+          {/* poster1 is the LCP element — lazy loading it was delaying the largest paint */}
+          {/* fetchpriority="high" tells the browser to fetch this image before other resources */}
           <img
             src="/images/poster1.jpg"
             alt="Spring Style"
-            loading="lazy"
+            fetchpriority="high"
             className="absolute top-0 left-0 w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-1000 ease-out"
           />
         </picture>

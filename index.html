@@ -119,6 +119,58 @@
       ]
     }
     </script>
+
+    <!-- Structured Data – Local Business (item 2 & 3) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ClothingStore",
+      "name": "Jeanzey",
+      "url": "https://jeanzey.com",
+      "logo": "https://jeanzey.com/logo.png",
+      "image": "https://jeanzey.com/og-image.jpg",
+      "description": "Mumbai's premium luxury fashion store offering trendy men's and women's clothing, jeans, shirts, t-shirts and combo outfits with free delivery across India.",
+      "telephone": "+91-9987683105",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Mumbai",
+        "addressRegion": "Maharashtra",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "19.0760",
+        "longitude": "72.8777"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "09:00",
+          "closes": "21:00"
+        }
+      ],
+      "sameAs": [
+        "https://www.instagram.com/jeanzey",
+        "https://www.facebook.com/jeanzey",
+        "https://twitter.com/jeanzey"
+      ],
+      "priceRange": "₹₹",
+      "currenciesAccepted": "INR",
+      "paymentAccepted": "Cash, Credit Card, UPI"
+    }
+    </script>
+
+    <!-- Google Analytics GA4 (item 5) -->
+    <!-- REPLACE BOTH instances of G-XXXXXXXXXX with your Measurement ID from analytics.google.com -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
   </head>
 
   <body>
@@ -128,6 +180,29 @@
     <script type="module" src="/src/main.jsx"></script>
 
     <!-- Razorpay checkout -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- PERFORMANCE: Commented out from global load — now loaded dynamically in PlaceOrder.jsx only when needed -->
+    <!-- Uncomment this line to restore global Razorpay loading -->
+    <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
+
+    <!-- Facebook Pixel (item 4) -->
+    <!-- REPLACE BOTH instances of YOUR_PIXEL_ID with your Pixel ID from business.facebook.com/events/manager -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', 'YOUR_PIXEL_ID');
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"
+      />
+    </noscript>
+
   </body>
 </html>

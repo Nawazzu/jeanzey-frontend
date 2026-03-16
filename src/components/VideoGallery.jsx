@@ -54,6 +54,9 @@ const VideoGallery = () => {
             ${hoveredVideo === 'main' ? 'border-white/80 scale-[0.98]' : 'border-white/20 scale-100'}`}>
           </div>
 
+          {/* PERFORMANCE: preload changed from "metadata" to "none" */}
+          {/* Videos are below the fold — fetching metadata on load was downloading 6MB unnecessarily */}
+          {/* To restore previous behaviour: change preload="none" back to preload="metadata" */}
           <video
             className={`w-full h-[350px] md:h-[450px] object-cover transition-all duration-1000 ease-out
               ${hoveredVideo === 'main' ? 'scale-110 brightness-110' : 'scale-100 brightness-90'}`}
@@ -61,7 +64,7 @@ const VideoGallery = () => {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
           >
             <source src={videos.main.src} type="video/mp4" />
           </video>
@@ -111,6 +114,8 @@ const VideoGallery = () => {
                 ${hoveredVideo === `right-${idx}` ? 'border-white/80 scale-[0.96]' : 'border-white/20 scale-100'}`}>
               </div>
 
+              {/* PERFORMANCE: preload changed from "metadata" to "none" */}
+              {/* To restore previous behaviour: change preload="none" back to preload="metadata" */}
               <video
                 className={`w-full h-[210px] md:h-[215px] object-cover transition-all duration-1000 ease-out
                   ${hoveredVideo === `right-${idx}` ? 'scale-110 brightness-110' : 'scale-100 brightness-90'}`}
@@ -118,7 +123,7 @@ const VideoGallery = () => {
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="none"
               >
                 <source src={vid.src} type="video/mp4" />
               </video>
