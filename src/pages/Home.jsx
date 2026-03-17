@@ -22,7 +22,7 @@ const PremiumTimeline = React.lazy(() => import('../components/PremiumTimeline')
 const DenimSplit = React.lazy(() => import('../components/DenimSplit'))
 const BestSeller = React.lazy(() => import('../components/BestSeller'))
 const Testimonials = React.lazy(() => import('../components/Testimonials'))
-
+const SEOSection = React.lazy(() => import('../components/SEOSection'))
 
 // Unused imports kept as comments to preserve original structure
 // import OurPolicy from '../components/OurPolicy'
@@ -38,7 +38,7 @@ const Home = () => {
         <meta name="description" content="Jean-Zey is Mumbai's premium fashion brand. Shop men's and women's jeans, shirts, t-shirts and combos. Free delivery across Mumbai with open box delivery." />
         <meta name="keywords" content="Jean-Zey, jeanzey, premium fashion Mumbai, jeans Mumbai, shirts Mumbai, buy clothes online India, luxury fashion brand Mumbai" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://jeanzey.com/" />
+        {/* Canonical removed — already set in index.html to avoid duplicate canonical tags */}
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
@@ -54,10 +54,7 @@ const Home = () => {
         <meta name="twitter:image" content="https://jeanzey.com/og-image.jpg" />
       </Helmet>
 
-      {/* H1 — visible to Google, hidden from UI */}
-      <h1 className="sr-only">
-        Jeanzey — Premium Fashion Store Mumbai | Men's &amp; Women's Jeans, Shirts &amp; T-Shirts
-      </h1>
+      {/* H1 lives in HeroSplit.jsx — removed from here to avoid duplicate H1 tags */}
 
       {/* Above-fold — loads immediately */}
       <HeroSplit/>
@@ -113,7 +110,7 @@ const Home = () => {
           <Testimonials/>
         </section>
 
-    
+        <SEOSection/>
 
         {/* Internal links for SEO */}
         <nav aria-label="Shop categories" style={{ display: 'none' }}>

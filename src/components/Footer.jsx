@@ -117,16 +117,13 @@ const Footer = () => {
                   Instagram
                 </a>
               </li>
+              {/* Pinterest — add real URL when available */}
               {/* <li className="footer-link">
                 <a href="https://pinterest.com/demo" target="_blank" rel="noopener noreferrer">
                   Pinterest
                 </a>
               </li> */}
-              <li className="footer-link">
-                <a href="https://facebook.com/demo" target="_blank" rel="noopener noreferrer">
-                  Facebook
-                </a>
-              </li>
+              {/* Facebook — removed until real page URL is available */}
               <li className="footer-link">
                 <a href="https://wa.me/+919987683105" target="_blank" rel="noopener noreferrer">
                   Whatsapp

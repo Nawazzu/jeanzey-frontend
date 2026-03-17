@@ -328,7 +328,7 @@ const Collection = () => {
         <title>Shop All Collection – Shirts, Jeans, T-Shirts | Jean-Zey</title>
         <meta name="description" content="Browse Jean-Zey's full collection of men's and women's fashion. Filter by shirts, jeans, t-shirts and combo outfits. Free delivery across Mumbai." />
         <meta name="keywords" content="buy jeans Mumbai, shirts online Mumbai, t-shirts, combo outfits, Jean-Zey collection, fashion Mumbai" />
-        <link rel="canonical" href="https://jeanzey-frontend.vercel.app/collection" />
+        <link rel="canonical" href="https://jeanzey.com/collection" />
       </Helmet>
 
       <h1 className="sr-only">Shop All Collections — Men's & Women's Fashion</h1>

@@ -438,7 +438,7 @@ const Product = () => {
       <Helmet>
         <title>{productData.name} | Jean-Zey Mumbai</title>
         <meta name="description" content={`Buy ${productData.name} online from Jean-Zey Mumbai. ${productData.description?.slice(0, 120) || 'Premium fashion delivered across Mumbai.'}`} />
-        <link rel="canonical" href={`https://jeanzey-frontend.vercel.app/product/${productId}`} />
+        <link rel="canonical" href={`https://jeanzey.com/product/${productId}`} />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Product",

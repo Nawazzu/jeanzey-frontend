@@ -61,7 +61,7 @@ const About = () => {
       <Helmet>
         <title>About Jean-Zey | Premium Fashion Brand Mumbai</title>
         <meta name="description" content="Learn about Jean-Zey, Mumbai's premium fashion brand. Discover our story, heritage and commitment to luxury fashion for men and women." />
-        <link rel="canonical" href="https://jeanzey-frontend.vercel.app/about" />
+        <link rel="canonical" href="https://jeanzey.com/about" />
       </Helmet>
 
       <h1 className="sr-only">About Jeanzey — Our Story & Vision</h1>
