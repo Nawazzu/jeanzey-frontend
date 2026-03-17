@@ -12,11 +12,18 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     /> -->
 
-    <!-- Faster One font for brand name -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Faster+One&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-<noscript><link href="https://fonts.googleapis.com/css2?family=Faster+One&display=swap" rel="stylesheet" /></noscript>
+    <!-- Faster One font — self-hosted to eliminate Google Fonts render block -->
+    <!-- PERFORMANCE: Removed Google Fonts CDN link — font now served from /public/fonts/FasterOne.ttf -->
+    <!-- To revert: remove this <style> block and restore the Google Fonts <link> tags below -->
+    <style>
+      @font-face {
+        font-family: 'Faster One';
+        src: url('/fonts/FasterOne.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
 
     <!-- PERFORMANCE: Preconnect to backend and Cloudinary — saves ~600ms on first requests -->
     <link rel="preconnect" href="https://jeanzey-backend.onrender.com" />

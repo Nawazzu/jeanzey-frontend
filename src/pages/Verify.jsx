@@ -42,7 +42,7 @@ const Verify = () => {
 
     return (
         <div>
-
+            <h1 className="sr-only">Verify Your Account — Jeanzey</h1>
         </div>
     )
 }

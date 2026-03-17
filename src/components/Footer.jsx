@@ -117,11 +117,11 @@ const Footer = () => {
                   Instagram
                 </a>
               </li>
-              <li className="footer-link">
+              {/* <li className="footer-link">
                 <a href="https://pinterest.com/demo" target="_blank" rel="noopener noreferrer">
                   Pinterest
                 </a>
-              </li>
+              </li> */}
               <li className="footer-link">
                 <a href="https://facebook.com/demo" target="_blank" rel="noopener noreferrer">
                   Facebook
@@ -132,11 +132,7 @@ const Footer = () => {
                   Whatsapp
                 </a>
               </li>
-              {/* <li className="footer-link">
-                <a href="https://snapchat.com/add/demo" target="_blank" rel="noopener noreferrer">
-                  Snapchat
-                </a>
-              </li> */}
+            
             </ul>
           </div>
         </div>

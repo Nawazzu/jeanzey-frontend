@@ -254,6 +254,7 @@ const PlaceOrder = () => {
   return (
     <>
       <div className="relative bg-gradient-to-b from-white via-gray-100 to-gray-200 min-h-[90vh] py-12">
+        <h1 className="sr-only">Place Your Order — Jeanzey Checkout</h1>
         <div className="mb-8 mt-8">
           <button
             type="button"

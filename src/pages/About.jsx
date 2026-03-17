@@ -64,6 +64,8 @@ const About = () => {
         <link rel="canonical" href="https://jeanzey-frontend.vercel.app/about" />
       </Helmet>
 
+      <h1 className="sr-only">About Jeanzey — Our Story & Vision</h1>
+
       {/* Visually hidden H2 for SEO */}
       <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
         About Jean-Zey — Mumbai's Premium Fashion Brand | Our Story &amp; Heritage

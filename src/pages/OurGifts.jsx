@@ -30,14 +30,15 @@ const OurGifts = () => {
     <div className="min-h-screen bg-[#f7f5f2] px-6 sm:px-12 lg:px-24 py-20">
       {/* Page Title */}
       <div className="text-center mb-20">
-        <motion.h1
+        <h1 className="sr-only">Our Gifts — Complimentary Surprises with Every Order</h1>
+        <motion.h2
           className="text-[3rem] sm:text-[4rem] md:text-[5rem] font-extrabold uppercase tracking-widest text-gray-900"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
           Our Gifts
-        </motion.h1>
+        </motion.h2>
         <motion.p
           className="mt-4 text-gray-700 max-w-3xl mx-auto text-base sm:text-lg"
           initial={{ opacity: 0, y: 20 }}

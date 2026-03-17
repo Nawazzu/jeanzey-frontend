@@ -8,15 +8,17 @@ const ComingSoon = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-[#f7f5f2] text-gray-900 px-6 sm:px-12 lg:px-24 relative">
 
+<h1 className="sr-only">Coming Soon — New Collections from Jeanzey</h1>
+
       {/* Animated Title */}
-      <motion.h1
+      <motion.h2
         className="text-5xl sm:text-7xl font-extralight tracking-widest uppercase text-[#b8860b] mb-6 text-center"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
         Coming Soon
-      </motion.h1>
+      </motion.h2>
 
       {/* Subtitle */}
       <motion.p
