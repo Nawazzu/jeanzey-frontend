@@ -44,8 +44,11 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               {[
                 { name: "Our Story", path: "/about" },
-                { name: "Our Policy", path: "/PolicyPage" },
+                { name: "My Orders", path: "/orders" },
+                   { name: "Wishlist", path: "/wishlist" },
+               
                 { name: "The Founder's Vision", path: "/founders-vision" },
+               { name: "Our Policy", path: "/PolicyPage" },
               ].map((item, idx) => (
                 <li key={idx} className="footer-link">
                   <Link to={item.path} onClick={handleNavClick}>{item.name}</Link>
@@ -129,11 +132,11 @@ const Footer = () => {
                   Whatsapp
                 </a>
               </li>
-              <li className="footer-link">
+              {/* <li className="footer-link">
                 <a href="https://snapchat.com/add/demo" target="_blank" rel="noopener noreferrer">
                   Snapchat
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
