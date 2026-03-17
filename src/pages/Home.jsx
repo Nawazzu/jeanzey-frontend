@@ -22,7 +22,7 @@ const PremiumTimeline = React.lazy(() => import('../components/PremiumTimeline')
 const DenimSplit = React.lazy(() => import('../components/DenimSplit'))
 const BestSeller = React.lazy(() => import('../components/BestSeller'))
 const Testimonials = React.lazy(() => import('../components/Testimonials'))
-const SEOSection = React.lazy(() => import('../components/SEOSection'))
+
 
 // Unused imports kept as comments to preserve original structure
 // import OurPolicy from '../components/OurPolicy'
@@ -110,7 +110,7 @@ const Home = () => {
           <Testimonials/>
         </section>
 
-        <SEOSection/>
+  
 
         {/* Internal links for SEO */}
         <nav aria-label="Shop categories" style={{ display: 'none' }}>
