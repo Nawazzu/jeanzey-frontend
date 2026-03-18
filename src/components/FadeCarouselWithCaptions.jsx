@@ -89,9 +89,9 @@ const FadeCarouselLuxury = () => {
           {/* Premium Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/60 flex items-center justify-center text-center px-6">
             <div ref={textRef} className="text-white space-y-6 max-w-2xl">
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-playfair uppercase tracking-widest drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
+              <h2 className="text-4xl sm:text-6xl lg:text-7xl font-playfair uppercase tracking-widest drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
                 {slides[currentIndex].title}
-              </h1>
+              </h2>
               <p className="text-sm sm:text-lg md:text-xl font-lora tracking-wide opacity-90 drop-shadow-md">
                 {slides[currentIndex].subtitle}
               </p>
