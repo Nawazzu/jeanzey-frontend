@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -18,6 +18,22 @@ const About = () => {
   const heritageRef = useRef(null);
   const craftsmanshipRef = useRef(null);
   const mumbaiRef = useRef(null);
+
+  // Real stats from backend
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+       const res = await fetch('http://localhost:5000/api/stats');
+        const data = await res.json();
+        if (data.success) setStats(data.stats);
+      } catch (err) {
+        console.log('Stats fetch error:', err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     const sections = [
@@ -56,6 +72,32 @@ const About = () => {
     }
   }, []);
 
+  // Format number: 1200 → "1.2K+"
+  const formatNum = (n) => {
+    if (n === undefined || n === null) return '—';
+    if (n >= 1000) return `${(n / 1000).toFixed(1)}K+`;
+    return `${n}+`;
+  };
+
+  const statsData = [
+    {
+      number: stats ? formatNum(stats.users) : '—',
+      label: "Registered Members",
+    },
+    {
+      number: "Since 2024",
+      label: "Est. in Mumbai",
+    },
+    {
+      number: stats ? formatNum(stats.products) : '—',
+      label: "Curated Products",
+    },
+    {
+      number: stats ? `${stats.avgRating}★` : '—',
+      label: `Avg Rating · ${stats ? stats.totalReviews : 0} Reviews`,
+    },
+  ];
+
   return (
     <>
       <Helmet>
@@ -67,7 +109,7 @@ const About = () => {
       <h1 className="sr-only">About Jeanzey — Our Story & Vision</h1>
 
       {/* Visually hidden H2 for SEO */}
-      <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
+      <h2 className="sr-only">
         About Jean-Zey — Mumbai's Premium Fashion Brand | Our Story &amp; Heritage
       </h2>
 
@@ -126,16 +168,11 @@ const About = () => {
           </div>
         </div>
 
-        {/* Premium Stats Section */}
+        {/* Premium Stats Section — real data from backend */}
         <div ref={statsRef} className="bg-gray-50 py-20 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-              {[
-                { number: "50K+", label: "Discerning Clients" },
-                { number: "10+", label: "Years of Mastery" },
-                { number: "200+", label: "Curated Pieces" },
-                { number: "98%", label: "Client Satisfaction" },
-              ].map(({ number, label }, idx) => (
+              {statsData.map(({ number, label }, idx) => (
                 <div key={idx} className="text-center space-y-3">
                   <h3 className="text-5xl font-light text-gray-900">
                     {number}
