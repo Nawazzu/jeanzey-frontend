@@ -25,7 +25,7 @@ const About = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-     const res = await fetch('https://jeanzey-backend.onrender.com/api/stats/public');
+     const res = await fetch('https://jeanzey-backend.onrender.com/api/stats');
         const data = await res.json();
         if (data.success) setStats(data.stats);
       } catch (err) {
