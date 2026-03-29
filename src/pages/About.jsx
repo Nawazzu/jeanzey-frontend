@@ -25,7 +25,7 @@ const About = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-       const res = await fetch('http://localhost:5000/api/stats');
+     const res = await fetch('https://jeanzey-backend.onrender.com/api/stats/public');
         const data = await res.json();
         if (data.success) setStats(data.stats);
       } catch (err) {
@@ -206,7 +206,6 @@ const About = () => {
               Delivering Exclusively Across Mumbai 🏙️
             </p>
           </div>
-          <div className="absolute inset-0 bg-[url('/images/mumbai-skyline.jpg')] bg-cover bg-center opacity-10"></div>
         </div>
 
         {/* Heritage & Philosophy */}
