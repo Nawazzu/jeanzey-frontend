@@ -69,6 +69,7 @@ const Footer = () => {
                 { name: "FAQs", path: "/terms-and-conditions" },
                 { name: "Size Guide", path: "/size-guide" },
                 { name: "Contact Us", path: "/contact" },
+                { name: "Track Order", path: "/track-order" },
               ].map((item, idx) => (
                 <li key={idx} className="footer-link">
                   <Link to={item.path} onClick={handleNavClick}>{item.name}</Link>

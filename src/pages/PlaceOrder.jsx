@@ -124,6 +124,7 @@ const PlaceOrder = () => {
           day: "2-digit",
           month: "long",
           year: "numeric",
+           track_link: `https://jeanzey-frontend.vercel.app/track-order?orderId=${orderDetails.order_id}`, // ← add this
         }),
         payment_method: method === "cod" ? "Cash on Delivery" : "Online Payment",
         delivery_address: `${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.state} - ${selectedAddress.zipcode}, ${selectedAddress.country}`,

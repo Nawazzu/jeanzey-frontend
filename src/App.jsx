@@ -27,6 +27,7 @@ import ShippingReturnsPage from "./components/ShippingReturnsPage";
 import Wishlist from "./pages/Wishlist";
 import LimitedEdition from "./pages/LimitedEdition";
 import ScrollToTop from "./components/ScrollToTop";
+import TrackOrder from "./pages/TrackOrder";
 
 const App = () => {
   return (
@@ -54,7 +55,10 @@ const App = () => {
           <Route path="/orders" element={<Orders />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
           <Route path="/PolicyPage" element={<PolicyPage />} />
           <Route path="/size-guide" element={<SizeGuide />} />
           <Route path="/founders-vision" element={<FoundersVision />} />
@@ -63,6 +67,7 @@ const App = () => {
           <Route path="/shipping-returns" element={<ShippingReturnsPage />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/limited-editions" element={<LimitedEdition />} />
+          <Route path="/track-order" element={<TrackOrder />} />
         </Routes>
       </div>
 
