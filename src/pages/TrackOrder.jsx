@@ -1,15 +1,16 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { ShopContext } from '../context/ShopContext';
 import { Helmet } from 'react-helmet-async';
+import WhatsAppButton from '../components/WhatsAppButton';
 
 const STATUSES = [
-  { key: 'Order Placed',      label: 'Order Placed',      desc: 'Your order has been received and confirmed.' },
-  { key: 'Packing',           label: 'Packing',           desc: 'Your items are being carefully packed.' },
-  { key: 'Shipped',           label: 'Shipped',           desc: 'Your order is on its way.' },
-  { key: 'Out for Delivery',  label: 'Out for Delivery',  desc: 'Your order is out for delivery today.' },
-  { key: 'Delivered',         label: 'Delivered',         desc: 'Your order has been delivered.' },
+  { key: 'Order Placed',      label: 'Order Placed',      desc: 'Your order has been received and confirmed.', icon: '✦' },
+  { key: 'Packing',           label: 'Packing',           desc: 'Your items are being carefully packed.',      icon: '◈' },
+  { key: 'Shipped',           label: 'Shipped',           desc: 'Your order is on its way.',                   icon: '⬡' },
+  { key: 'Out for Delivery',  label: 'Out for Delivery',  desc: 'Your order is out for delivery today.',       icon: '❋' },
+  { key: 'Delivered',         label: 'Delivered',         desc: 'Your order has been delivered.',              icon: '✓' },
 ];
 
 const getStatusIndex = (status) => {
@@ -32,8 +33,12 @@ const TrackOrder = () => {
   const [orderId, setOrderId] = useState(searchParams.get('orderId') || '');
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [showTracking, setShowTracking] = useState(true);
 
   // Auto-fetch if orderId in URL
   useEffect(() => {
@@ -55,6 +60,7 @@ const TrackOrder = () => {
       const res = await axios.post(`${backendUrl}/api/order/track`, { orderId: oid });
       if (res.data.success) {
         setOrder(res.data.order);
+        setLastRefreshed(new Date());
       } else {
         setError(res.data.message || 'Order not found.');
       }
@@ -64,8 +70,31 @@ const TrackOrder = () => {
     setLoading(false);
   };
 
+  // Refresh status — re-fetches same order from backend
+  const handleRefresh = async () => {
+    if (!order?._id || refreshing) return;
+    setRefreshing(true);
+    try {
+      const res = await axios.post(`${backendUrl}/api/order/track`, { orderId: order._id });
+      if (res.data.success) {
+        setOrder(res.data.order);
+        setLastRefreshed(new Date());
+      }
+    } catch {}
+    setRefreshing(false);
+  };
+
+  const handleCopyId = () => {
+    if (!order?._id) return;
+    navigator.clipboard.writeText(order._id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const currentIdx = order ? getStatusIndex(order.status) : 0;
   const isCancelled = order?.status?.toLowerCase() === 'cancelled';
+
+  const progressPercent = isCancelled ? 0 : (currentIdx / (STATUSES.length - 1)) * 100;
 
   return (
     <>
@@ -77,34 +106,71 @@ const TrackOrder = () => {
 
       <h1 className="sr-only">Track Your Jeanzey Order</h1>
 
+      <style>{`
+        .track-input:focus { border-color: #b8860b !important; outline: none; box-shadow: 0 0 0 3px rgba(184,134,11,0.08); }
+        .track-btn-primary { transition: all 0.3s ease; }
+        .track-btn-primary:hover:not(:disabled) { background: #b8860b !important; }
+        .refresh-btn { transition: all 0.3s ease; }
+        .refresh-btn:hover:not(:disabled) { background: #1a1a1a !important; color: #fff !important; }
+        .refresh-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .status-dot-pulse { animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(184,134,11,0.4); } 50% { box-shadow: 0 0 0 8px rgba(184,134,11,0); } }
+        .track-card { transition: box-shadow 0.3s ease; }
+        .track-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.06) !important; }
+        .progress-bar-fill { transition: width 1s ease; }
+        .fade-in { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .copy-btn { transition: all 0.2s ease; }
+        .copy-btn:hover { color: #b8860b !important; }
+        @media (max-width: 600px) {
+          .track-hero-title { font-size: 28px !important; }
+          .track-meta-grid { flex-direction: column !important; gap: 16px !important; }
+          .track-id-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+          .track-search-row { flex-direction: column !important; }
+          .track-search-row button { width: 100% !important; }
+          .track-items-row { flex-direction: column !important; align-items: flex-start !important; }
+          .track-items-price { margin-top: 4px; }
+        }
+      `}</style>
+
       <div style={{ minHeight: '100vh', background: '#fafaf8', fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}>
 
         {/* Hero */}
-        <div style={{ borderBottom: '1px solid #e8e6e1', padding: '64px 24px 48px', textAlign: 'center', background: '#fff' }}>
-          <p style={{ fontSize: '10px', letterSpacing: '0.35em', textTransform: 'uppercase', color: '#b0a898', margin: '0 0 16px', fontFamily: 'sans-serif' }}>
+        <div style={{ borderBottom: '1px solid #e8e6e1', padding: 'clamp(40px,8vw,72px) 24px clamp(32px,5vw,52px)', textAlign: 'center', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+          {/* Subtle background pattern */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(184,134,11,0.03) 0%, transparent 60%), radial-gradient(circle at 80% 50%, rgba(184,134,11,0.03) 0%, transparent 60%)', pointerEvents: 'none' }} />
+          <p style={{ fontSize: '12px', letterSpacing: '0.35em', textTransform: 'uppercase', color: '#b8860b', margin: '28px 16px', fontFamily: 'sans-serif', position: 'relative' }}>
             Jean-Zey · Order Tracking
           </p>
-          <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 400, color: '#1a1a1a', margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+          <h2 className="track-hero-title" style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 400, color: '#1a1a1a', margin: '0 0 8px', letterSpacing: '-0.01em', position: 'relative' }}>
             Track Your Order
           </h2>
-          <p style={{ fontSize: '15px', color: '#888', fontWeight: 400, margin: 0, fontStyle: 'italic' }}>
+          <p style={{ fontSize: 'clamp(13px,2vw,15px)', color: '#888', fontWeight: 400, margin: '0 0 20px', fontStyle: 'italic', position: 'relative' }}>
             Enter the Order ID from your confirmation email
           </p>
+          {/* Decorative line */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', position: 'relative' }}>
+            <div style={{ width: '40px', height: '1px', background: '#e8e6e1' }} />
+            <span style={{ color: '#b8860b', fontSize: '12px' }}>✦</span>
+            <div style={{ width: '40px', height: '1px', background: '#e8e6e1' }} />
+          </div>
         </div>
 
         {/* Search Box */}
-        <div style={{ maxWidth: '560px', margin: '0 auto', padding: '48px 24px 0' }}>
-          <div style={{ background: '#fff', border: '1px solid #e8e6e1', padding: '32px' }}>
+        <div style={{ maxWidth: '580px', margin: '0 auto', padding: 'clamp(24px,5vw,48px) 16px 0' }}>
+          <div className="track-card" style={{ background: '#fff', border: '1px solid #e8e6e1', padding: 'clamp(20px,4vw,32px)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
             <label style={{ display: 'block', fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', marginBottom: '12px', fontFamily: 'sans-serif' }}>
               Order ID
             </label>
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="track-search-row" style={{ display: 'flex', gap: '12px' }}>
               <input
+                className="track-input"
                 type="text"
                 value={orderId}
                 onChange={e => setOrderId(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleTrack()}
-                placeholder="e.g. 6849f2a3c1..."
+                placeholder="e.g. 6849f2a3c1b2d3e4f5a6b7c8"
                 style={{
                   flex: 1,
                   border: '1px solid #ddd',
@@ -112,13 +178,15 @@ const TrackOrder = () => {
                   padding: '14px 16px',
                   fontSize: '13px',
                   fontFamily: 'monospace',
-                  outline: 'none',
                   color: '#1a1a1a',
                   background: '#fafaf8',
                   letterSpacing: '0.05em',
+                  transition: 'border-color 0.2s',
+                  minWidth: 0,
                 }}
               />
               <button
+                className="track-btn-primary"
                 onClick={() => handleTrack()}
                 disabled={loading}
                 style={{
@@ -133,63 +201,145 @@ const TrackOrder = () => {
                   fontFamily: 'sans-serif',
                   opacity: loading ? 0.6 : 1,
                   whiteSpace: 'nowrap',
+                  flexShrink: 0,
                 }}
               >
-                {loading ? 'Tracking...' : 'Track'}
+                {loading ? '...' : 'Track'}
               </button>
             </div>
             {error && (
               <p style={{ marginTop: '12px', fontSize: '12px', color: '#c0392b', fontStyle: 'italic', fontFamily: 'sans-serif' }}>
-                {error}
+                ⚠ {error}
               </p>
             )}
+            <p style={{ marginTop: '14px', fontSize: '11px', color: '#bbb', fontFamily: 'sans-serif', fontStyle: 'italic' }}>
+              Your Order ID was sent in your confirmation email after placing the order.
+            </p>
           </div>
         </div>
 
         {/* Results */}
-        {order && (
-          <div style={{ maxWidth: '760px', margin: '0 auto', padding: '40px 24px 80px' }}>
+       {order && showTracking && (
+        
+          <div className="fade-in" style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(24px,4vw,40px) 16px clamp(48px,8vw,80px)' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+  <button
+    onClick={() => setShowTracking(false)}
+    style={{
+      background: 'transparent',
+      border: '1px solid #e8e6e1',
+      padding: '6px 12px',
+      fontSize: '10px',
+      letterSpacing: '0.2em',
+      textTransform: 'uppercase',
+      cursor: 'pointer',
+      fontFamily: 'sans-serif',
+      color: '#888'
+    }}
+  >
+    ✕ Close
+  </button>
+</div>
+
+            {/* Progress Bar */}
+            {!isCancelled && (
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', fontFamily: 'sans-serif' }}>
+                    Delivery Progress
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#b8860b', fontFamily: 'sans-serif', fontWeight: 500 }}>
+                    {Math.round(progressPercent)}% complete
+                  </span>
+                </div>
+                <div style={{ height: '3px', background: '#f0ede8', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div className="progress-bar-fill" style={{ height: '100%', width: `${progressPercent}%`, background: 'linear-gradient(90deg, #b8860b, #d4af37)', borderRadius: '2px' }} />
+                </div>
+              </div>
+            )}
 
             {/* Order Meta */}
-            <div style={{ background: '#fff', border: '1px solid #e8e6e1', padding: '28px 32px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                <div>
+            <div className="track-card" style={{ background: '#fff', border: '1px solid #e8e6e1', padding: 'clamp(20px,3vw,28px) clamp(20px,3vw,32px)', marginBottom: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
+              <div className="track-id-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 6px', fontFamily: 'sans-serif' }}>Order ID</p>
-                  <p style={{ fontSize: '13px', fontFamily: 'monospace', color: '#1a1a1a', margin: 0, letterSpacing: '0.05em' }}>{order._id}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <p style={{ fontSize: 'clamp(11px,1.5vw,13px)', fontFamily: 'monospace', color: '#1a1a1a', margin: 0, letterSpacing: '0.05em', wordBreak: 'break-all' }}>{order._id}</p>
+                    <button className="copy-btn" onClick={handleCopyId} title="Copy Order ID" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: copied ? '#b8860b' : '#bbb', padding: '2px', flexShrink: 0 }}>
+                      {copied ? '✓ Copied' : '⧉ Copy'}
+                    </button>
+                  </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 6px', fontFamily: 'sans-serif' }}>Placed On</p>
                   <p style={{ fontSize: '13px', color: '#1a1a1a', margin: 0, fontFamily: 'sans-serif' }}>{formatDate(order.date)}</p>
                 </div>
               </div>
-              <div style={{ borderTop: '1px solid #f0ede8', marginTop: '20px', paddingTop: '20px', display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
-                <div>
-                  <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Payment</p>
-                  <p style={{ fontSize: '13px', color: '#1a1a1a', margin: 0, fontFamily: 'sans-serif' }}>
-                    {order.paymentMethod || 'COD'} ·{' '}
-                    <span style={{ color: order.payment ? '#2d6a4f' : '#c0392b' }}>
-                      {order.payment ? 'Paid' : 'Pending'}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Total</p>
-                  <p style={{ fontSize: '13px', color: '#1a1a1a', margin: 0, fontFamily: 'sans-serif' }}>{currency}{order.amount}</p>
-                </div>
-                {order.priorityDelivery && (
+              <div style={{ borderTop: '1px solid #f0ede8', paddingTop: '16px' }}>
+                <div className="track-meta-grid" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                   <div>
-                    <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Delivery</p>
-                    <p style={{ fontSize: '13px', color: '#b8860b', margin: 0, fontFamily: 'sans-serif' }}>⚡ Priority (24hrs)</p>
+                    <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Payment</p>
+                    <p style={{ fontSize: '13px', color: '#1a1a1a', margin: 0, fontFamily: 'sans-serif' }}>
+                      {order.paymentMethod || 'COD'} ·{' '}
+                      <span style={{ color: order.payment ? '#2d6a4f' : '#c0392b' }}>
+                        {order.payment ? '✓ Paid' : '⏳ Pending'}
+                      </span>
+                    </p>
                   </div>
-                )}
+                  <div>
+                    <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Total</p>
+                    <p style={{ fontSize: '13px', color: '#1a1a1a', margin: 0, fontFamily: 'sans-serif', fontWeight: 500 }}>{currency}{order.amount}</p>
+                  </div>
+                  {order.priorityDelivery && (
+                    <div>
+                      <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Delivery</p>
+                      <p style={{ fontSize: '13px', color: '#b8860b', margin: 0, fontFamily: 'sans-serif' }}>⚡ Priority (24hrs)</p>
+                    </div>
+                  )}
+                  {lastRefreshed && (
+                    <div style={{ marginLeft: 'auto' }}>
+                      <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Last Updated</p>
+                      <p style={{ fontSize: '12px', color: '#aaa', margin: 0, fontFamily: 'sans-serif' }}>
+                        {lastRefreshed.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Status Timeline */}
-            <div style={{ background: '#fff', border: '1px solid #e8e6e1', padding: '32px', marginBottom: '20px' }}>
-              <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 28px', fontFamily: 'sans-serif' }}>
-                Delivery Status
-              </p>
+            <div className="track-card" style={{ background: '#fff', border: '1px solid #e8e6e1', padding: 'clamp(20px,3vw,32px)', marginBottom: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
+                <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: 0, fontFamily: 'sans-serif' }}>
+                  Delivery Status
+                </p>
+                {/* Refresh Button */}
+                <button
+                  className="refresh-btn"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  title="Refresh status"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: '#fafaf8',
+                    border: '1px solid #e8e6e1',
+                    padding: '7px 14px',
+                    fontSize: '10px',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    cursor: refreshing ? 'not-allowed' : 'pointer',
+                    fontFamily: 'sans-serif',
+                    color: '#888',
+                    opacity: refreshing ? 0.6 : 1,
+                  }}
+                >
+                  <span className={refreshing ? 'refresh-spin' : ''} style={{ display: 'inline-block', fontSize: '12px' }}>↻</span>
+                  {refreshing ? 'Refreshing...' : 'Refresh Status'}
+                </button>
+              </div>
 
               {isCancelled ? (
                 <div style={{ textAlign: 'center', padding: '24px 0' }}>
@@ -215,29 +365,34 @@ const TrackOrder = () => {
                             top: '32px',
                             width: '2px',
                             height: 'calc(100% - 8px)',
-                            background: isDone && idx < currentIdx ? '#1a1a1a' : '#e8e6e1',
+                            background: isDone && idx < currentIdx ? 'linear-gradient(180deg, #b8860b, #d4af37)' : '#e8e6e1',
                             transition: 'background 0.3s',
                           }} />
                         )}
                         {/* Dot */}
                         <div style={{ flexShrink: 0, marginTop: '4px' }}>
-                          <div style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '50%',
-                            border: `2px solid ${isDone ? '#1a1a1a' : '#ddd'}`,
-                            background: isCurrent ? '#1a1a1a' : isDone ? '#1a1a1a' : '#fff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.3s',
-                            position: 'relative',
-                            zIndex: 1,
-                          }}>
-                            {isDone && (
+                          <div
+                            className={isCurrent ? 'status-dot-pulse' : ''}
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '50%',
+                              border: `2px solid ${isCurrent ? '#b8860b' : isDone ? '#1a1a1a' : '#ddd'}`,
+                              background: isCurrent ? '#b8860b' : isDone ? '#1a1a1a' : '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'all 0.3s',
+                              position: 'relative',
+                              zIndex: 1,
+                              fontSize: '12px',
+                            }}>
+                            {isDone ? (
                               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                 <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                               </svg>
+                            ) : (
+                              <span style={{ color: '#ccc', fontSize: '10px' }}>{s.icon}</span>
                             )}
                           </div>
                         </div>
@@ -257,7 +412,7 @@ const TrackOrder = () => {
                                 fontSize: '9px',
                                 letterSpacing: '0.2em',
                                 textTransform: 'uppercase',
-                                background: '#1a1a1a',
+                                background: '#b8860b',
                                 color: '#fff',
                                 padding: '2px 8px',
                                 fontFamily: 'sans-serif',
@@ -281,22 +436,22 @@ const TrackOrder = () => {
             </div>
 
             {/* Items */}
-            <div style={{ background: '#fff', border: '1px solid #e8e6e1', padding: '28px 32px', marginBottom: '20px' }}>
+            <div className="track-card" style={{ background: '#fff', border: '1px solid #e8e6e1', padding: 'clamp(20px,3vw,28px) clamp(20px,3vw,32px)', marginBottom: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
               <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 20px', fontFamily: 'sans-serif' }}>
                 Order Items ({order.items?.length || 0})
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {order.items?.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: i < order.items.length - 1 ? '16px' : 0, borderBottom: i < order.items.length - 1 ? '1px solid #f5f3ef' : 'none' }}>
+                  <div key={i} className="track-items-row" style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: i < order.items.length - 1 ? '16px' : 0, borderBottom: i < order.items.length - 1 ? '1px solid #f5f3ef' : 'none' }}>
                     {item.image?.[0] && (
                       <img
                         src={item.image[0]}
                         alt={item.name}
-                        style={{ width: '60px', height: '72px', objectFit: 'cover', flexShrink: 0, background: '#f5f3ef' }}
+                        style={{ width: 'clamp(48px,8vw,60px)', height: 'clamp(60px,10vw,72px)', objectFit: 'cover', flexShrink: 0, background: '#f5f3ef' }}
                       />
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: '14px', color: '#1a1a1a', margin: '0 0 4px', fontWeight: 400, letterSpacing: '0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <p style={{ fontSize: 'clamp(13px,2vw,14px)', color: '#1a1a1a', margin: '0 0 4px', fontWeight: 400, letterSpacing: '0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.name}
                       </p>
                       <p style={{ fontSize: '11px', color: '#999', margin: 0, fontFamily: 'sans-serif', letterSpacing: '0.05em' }}>
@@ -306,17 +461,22 @@ const TrackOrder = () => {
                         )}
                       </p>
                     </div>
-                    <p style={{ fontSize: '14px', color: '#1a1a1a', margin: 0, flexShrink: 0, fontFamily: 'sans-serif' }}>
+                    <p className="track-items-price" style={{ fontSize: '14px', color: '#1a1a1a', margin: 0, flexShrink: 0, fontFamily: 'sans-serif', fontWeight: 500 }}>
                       {currency}{item.price}
                     </p>
                   </div>
                 ))}
               </div>
+              {/* Order total summary */}
+              <div style={{ borderTop: '1px solid #f0ede8', marginTop: '16px', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999', fontFamily: 'sans-serif' }}>Order Total</span>
+                <span style={{ fontSize: '16px', color: '#1a1a1a', fontWeight: 400 }}>{currency}{order.amount}</span>
+              </div>
             </div>
 
             {/* Delivery Address */}
             {order.address && (
-              <div style={{ background: '#fff', border: '1px solid #e8e6e1', padding: '28px 32px' }}>
+              <div className="track-card" style={{ background: '#fff', border: '1px solid #e8e6e1', padding: 'clamp(20px,3vw,28px) clamp(20px,3vw,32px)', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
                 <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 16px', fontFamily: 'sans-serif' }}>
                   Delivery Address
                 </p>
@@ -340,6 +500,14 @@ const TrackOrder = () => {
               </div>
             )}
 
+            {/* Help nudge */}
+            <div style={{ marginTop: '24px', textAlign: 'center', padding: '20px', border: '1px dashed #e8e6e1', background: '#fffdf9' }}>
+              <p style={{ fontSize: '13px', color: '#aaa', margin: '0 0 4px', fontStyle: 'italic' }}>Need help with your order?</p>
+              <a href="/contact" style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#b8860b', fontFamily: 'sans-serif', textDecoration: 'none' }}>
+                Contact Support →
+              </a>
+            </div>
+
           </div>
         )}
 
@@ -352,6 +520,7 @@ const TrackOrder = () => {
         )}
 
       </div>
+      <WhatsAppButton/>
     </>
   );
 };

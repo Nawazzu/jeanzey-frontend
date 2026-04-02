@@ -113,9 +113,12 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
     if (image?.length > 1) setCurrentImageIndex(state ? 1 : 0);
   };
 
-  const handleClick = () => {
-    navigate(`/product/${id}`);
-  };
+ const handleClick = () => {
+  // On mobile, prevent instant navigation (handled by touch)
+  if ('ontouchstart' in window) return;
+
+  navigate(`/product/${id}`);
+};
 
   const handleTouchStart = (e) => {
     wishlistTapped.current = false;
@@ -131,23 +134,31 @@ export const LuxuryProductCard = ({ id, image, name, price }) => {
     if (dy > 8 || dx > 8) touchMoved.current = true;
   };
 
-  const handleTouchEnd = (e) => {
-    // Heart was tapped — skip navigation, wishlist already toggled
-    if (wishlistTapped.current) {
-      wishlistTapped.current = false;
-      touchStartY.current = null;
-      touchStartX.current = null;
-      touchMoved.current = false;
-      return;
-    }
-    // Clean tap (not a scroll) — always navigate
-    if (!touchMoved.current) {
-      navigate(`/product/${id}`);
-    }
+const handleTouchEnd = (e) => {
+  if (wishlistTapped.current) {
+    wishlistTapped.current = false;
     touchStartY.current = null;
     touchStartX.current = null;
     touchMoved.current = false;
-  };
+    return;
+  }
+
+  // If it's a clean tap (not scroll)
+  if (!touchMoved.current) {
+    // First tap → switch image
+    if (image?.length > 1 && currentImageIndex === 0) {
+      setCurrentImageIndex(1);
+      return;
+    }
+
+    // Second tap → navigate
+    navigate(`/product/${id}`);
+  }
+
+  touchStartY.current = null;
+  touchStartX.current = null;
+  touchMoved.current = false;
+};
 
   const handleWishlist = (e) => {
     e.preventDefault();

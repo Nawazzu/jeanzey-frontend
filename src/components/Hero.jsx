@@ -63,12 +63,12 @@ const Hero = () => {
         
         <div className='text-[#2c2c2c] max-w-lg space-y-2.5 sm:space-y-3 relative z-10 w-full'>
           {/* Label Badge */}
-          <div className='inline-block px-2.5 sm:px-3 py-1 border border-amber-700/30 text-amber-800 text-[9px] sm:text-[10px] tracking-[0.2em] uppercase mb-1 sm:mb-2'>
+          {/* <div className='inline-block px-2.5 sm:px-3 py-1 border border-amber-700/30 text-amber-800 text-[9px] sm:text-[10px] tracking-[0.2em] uppercase mb-1 sm:mb-2'>
             Mumbai's Luxury Destination
-          </div>
+          </div> */}
           
           {/* Main Heading — downgraded to h2 since HeroSplit holds the page H1 */}
-          <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight tracking-wide'>
+      <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight tracking-wide mt-4 sm:mt-5 md:mt-6'>
             <span className='italic font-serif'>Handcrafted Luxury</span>,<br className='hidden sm:block' />
             <span className='font-semibold'>Delivered to Your Doorstep</span>
           </h2>

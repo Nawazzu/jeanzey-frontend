@@ -24,6 +24,8 @@ const Collection = () => {
   const [category, setCategory]             = useState([]);
   const [sortType, setSortType]             = useState("relavent");
   const [isLoading, setIsLoading]           = useState(true);
+  // Grid columns: 2 | 3 | 4
+  const [gridCols, setGridCols]             = useState(3);
 
   // Price bounds — derived once from products
   const [minBound, setMinBound]         = useState(0);
@@ -166,6 +168,36 @@ const Collection = () => {
   const minPct = getPercent(priceRange[0]);
   const maxPct = getPercent(priceRange[1]);
   const hasActiveFilters = category.length > 0 || priceApplied;
+
+  // Grid column class map
+  const gridClass = {
+    2: "grid-cols-2",
+    3: "grid-cols-2 sm:grid-cols-3",
+    4: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4",
+  };
+
+  // Grid switcher icons
+  const GridIcon2 = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="6" height="14" rx="1" fill="currentColor"/>
+      <rect x="9" y="1" width="6" height="14" rx="1" fill="currentColor"/>
+    </svg>
+  );
+  const GridIcon3 = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="4" height="14" rx="1" fill="currentColor"/>
+      <rect x="6" y="1" width="4" height="14" rx="1" fill="currentColor"/>
+      <rect x="11" y="1" width="4" height="14" rx="1" fill="currentColor"/>
+    </svg>
+  );
+  const GridIcon4 = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="3" height="14" rx="1" fill="currentColor"/>
+      <rect x="5" y="1" width="3" height="14" rx="1" fill="currentColor"/>
+      <rect x="9" y="1" width="3" height="14" rx="1" fill="currentColor"/>
+      <rect x="13" y="1" width="3" height="14" rx="1" fill="currentColor"/>
+    </svg>
+  );
 
   // ── Filter Panel — JSX variable (NOT a component) to prevent remount on re-render ──
   const filterContent = (
@@ -322,6 +354,37 @@ const Collection = () => {
           transform: translateX(0);
           transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        /* Product card hover overlay */
+        .prod-card-img { transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+        .prod-card:hover .prod-card-img { transform: scale(1.04); }
+        .prod-card-overlay {
+          position: absolute; inset: 0;
+          background: rgba(0,0,0,0);
+          transition: background 0.4s ease;
+          pointer-events: none;
+        }
+        .prod-card:hover .prod-card-overlay { background: rgba(0,0,0,0.08); }
+        /* Quick add button */
+        .quick-add {
+          position: absolute; bottom: 0; left: 0; right: 0;
+          background: rgba(10,10,10,0.92);
+          color: #fff;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          font-family: sans-serif;
+          padding: 12px;
+          text-align: center;
+          transform: translateY(100%);
+          transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+          pointer-events: none;
+        }
+        .prod-card:hover .quick-add { transform: translateY(0); pointer-events: auto; }
+        /* Grid switcher button */
+        .grid-btn { transition: all 0.2s ease; }
+        .grid-btn.active { background: #111; color: #fff; }
+        .grid-btn:not(.active) { background: transparent; color: #bbb; }
+        .grid-btn:not(.active):hover { color: #555; }
       `}</style>
 
       <Helmet>
@@ -462,22 +525,44 @@ const Collection = () => {
             )}
           </div>
 
-          {/* Desktop title + sort */}
-          <div className="hidden sm:flex justify-between items-center mb-6">
-            <Title text1={"ALL"} text2={"COLLECTIONS"} />
-            <select
-              onChange={(e) => setSortType(e.target.value)}
-              value={sortType}
-              className="border-2 border-gray-300 text-sm px-3 py-1 rounded-md"
-            >
-              <option value="relavent">Sort by: Relevant</option>
-              <option value="low-high">Sort by: Low to High</option>
-              <option value="high-low">Sort by: High to Low</option>
-            </select>
+          {/* Desktop title + grid switcher + sort */}
+          <div className="hidden sm:flex justify-between items-center mb-6 gap-4">
+            <div className="flex items-center gap-6">
+              <Title text1={"ALL"} text2={"COLLECTIONS"} />
+              <span className="text-sm text-gray-400 font-light">{filterProducts.length} items</span>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Grid switcher */}
+              <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1">
+                {[
+                  { cols: 2, Icon: GridIcon2 },
+                  { cols: 3, Icon: GridIcon3 },
+                  { cols: 4, Icon: GridIcon4 },
+                ].map(({ cols, Icon }) => (
+                  <button
+                    key={cols}
+                    onClick={() => setGridCols(cols)}
+                    className={`grid-btn p-1.5 rounded-md ${gridCols === cols ? 'active' : ''}`}
+                    title={`${cols} columns`}
+                  >
+                    <Icon />
+                  </button>
+                ))}
+              </div>
+              <select
+                onChange={(e) => setSortType(e.target.value)}
+                value={sortType}
+                className="border-2 border-gray-300 text-sm px-3 py-1 rounded-md"
+              >
+                <option value="relavent">Sort by: Relevant</option>
+                <option value="low-high">Sort by: Low to High</option>
+                <option value="high-low">Sort by: High to Low</option>
+              </select>
+            </div>
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 lg:gap-10">
+          <div className={`grid ${gridClass[gridCols]} gap-3 sm:gap-5`}>
             {isLoading ? (
               Array(10).fill(0).map((_, i) => <SkeletonProductCard key={i} />)
             ) : filterProducts.length > 0 ? (
@@ -485,23 +570,29 @@ const Collection = () => {
                 <Link
                   key={index}
                   to={`/product/${item._id}`}
-                  className="group block cursor-pointer"
+                  className="prod-card group block cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="relative overflow-hidden bg-[#f8f8f8] aspect-[3/4] rounded-2xl border border-gray-200 hover:border-gray-400 transition-all duration-500 shadow-sm hover:shadow-lg">
+                  {/* Image container */}
+                  <div className="relative overflow-hidden bg-[#f2f2f0] aspect-[3/4]" style={{ borderRadius: '4px' }}>
+
+                    {/* Images */}
                     {item.image?.map((img, i) => (
                       <img
                         key={i}
                         src={img}
                         alt={item.name}
                         loading="lazy"
-                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
+                        className={`prod-card-img absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
                           i === 0
-                            ? "opacity-100 scale-100"
-                            : "opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100"
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100"
                         }`}
                       />
                     ))}
+
+                    {/* Hover overlay */}
+                    <div className="prod-card-overlay" />
 
                     {/* Stock badges */}
                     {(() => {
@@ -511,8 +602,8 @@ const Collection = () => {
                         ? Object.values(stock).reduce((s, v) => s + (Number(v) || 0), 0)
                         : Number(stock) || 0;
                       if (totalStock === 0) return (
-                        <div className="absolute inset-0 flex items-center justify-center z-10 rounded-2xl"
-                          style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)" }}>
+                        <div className="absolute inset-0 flex items-center justify-center z-10"
+                          style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)", borderRadius: '4px' }}>
                           <span style={{
                             background: "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(220,220,220,0.75) 100%)",
                             border: "1px solid rgba(0,0,0,0.12)", color: "#111",
@@ -524,41 +615,45 @@ const Collection = () => {
                         </div>
                       );
                       if (totalStock <= 5) return (
-                        <div className="absolute top-2 left-2 z-10">
+                        <div className="absolute top-3 left-3 z-10">
                           <span style={{
-                            background: "linear-gradient(135deg, rgba(20,20,20,0.92) 0%, rgba(50,50,50,0.85) 100%)",
-                            border: "1px solid rgba(255,255,255,0.15)", color: "#fff",
-                            backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-                            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 10px rgba(0,0,0,0.3)",
-                            fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.08em",
-                            padding: "3px 10px", borderRadius: "999px", textTransform: "uppercase",
-                            display: "inline-block",
+                            background: "rgba(10,10,10,0.85)",
+                            color: "#fff",
+                            backdropFilter: "blur(8px)",
+                            fontWeight: 500, fontSize: "0.65rem", letterSpacing: "0.1em",
+                            padding: "3px 10px", borderRadius: "2px", textTransform: "uppercase",
+                            display: "inline-block", fontFamily: 'sans-serif',
                           }}>Only {totalStock} Left</span>
                         </div>
                       );
                       return null;
                     })()}
 
-                    {/* Wishlist */}
+                    {/* Wishlist button */}
                     <button
                       onClick={(e) => handleWishlistClick(e, item._id)}
-                      className={`absolute top-2 right-2 p-1.5 sm:p-2 rounded-full transition-all duration-300 border z-20 ${
+                      className={`absolute top-3 right-3 p-1.5 sm:p-2 rounded-full transition-all duration-300 border z-20 ${
                         isInWishlist(item._id)
-                          ? "bg-black text-white border-black scale-110"
-                          : "bg-white text-gray-800 border-gray-200 hover:bg-black hover:text-white"
+                          ? "bg-black text-white border-black"
+                          : "bg-white/90 text-gray-700 border-transparent hover:bg-black hover:text-white"
                       }`}
                       title={isInWishlist(item._id) ? "Remove from Wishlist" : "Add to Wishlist"}
                     >
-                      <Heart size={15} className={isInWishlist(item._id) ? "fill-white" : ""} />
+                      <Heart size={14} className={isInWishlist(item._id) ? "fill-white" : ""} />
                     </button>
+
+                    {/* Quick view slide-up */}
+                    <div className="quick-add">View Product</div>
+
                   </div>
 
-                  <div className="text-center mt-2.5 sm:mt-4 space-y-0.5">
-                    <h3 className="text-xs sm:text-sm font-medium text-gray-900 tracking-wide uppercase group-hover:text-gray-600 transition-colors duration-300 leading-tight">
+                  {/* Product info — editorial style */}
+                  <div className="mt-3 px-0.5">
+                    <h3 className="text-xs sm:text-sm font-light text-gray-900 tracking-wide uppercase leading-snug group-hover:text-gray-500 transition-colors duration-300 truncate">
                       {item.name}
                     </h3>
-                    <p className="text-xs sm:text-sm font-light text-gray-600">
-                      {currency}{item.price}
+                    <p className="text-xs sm:text-sm text-gray-500 font-light mt-0.5" style={{ fontFamily: 'sans-serif', letterSpacing: '0.02em' }}>
+                      {currency}{item.price.toLocaleString('en-IN')}
                     </p>
                   </div>
                 </Link>
