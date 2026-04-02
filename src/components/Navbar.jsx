@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, MapPin, Heart, ShoppingBag, X } from "lucide-react";
+import { User, MapPin, Heart, ShoppingBag, X, Truck } from "lucide-react";
 import SavedAddresses from "./SavedAddresses";
 
 const Navbar = () => {
@@ -231,6 +231,13 @@ const Navbar = () => {
                     >
                       <Heart size={16} />
                       My Wishlist
+                    </Link>
+                       <Link
+                      to="/track-order"
+                      className="block px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2 border-b border-gray-100"
+                    >
+                      <Truck size={16} />
+                      Track Order
                     </Link>
                     <button
                       onClick={() => {

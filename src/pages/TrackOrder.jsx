@@ -52,6 +52,7 @@ const TrackOrder = () => {
   const handleTrack = async (id) => {
     const oid = (id || orderId).trim();
     if (!oid) { setError('Please enter your Order ID.'); return; }
+    setShowTracking(true);
     setLoading(true);
     setError('');
     setOrder(null);
@@ -218,13 +219,20 @@ const TrackOrder = () => {
           </div>
         </div>
 
+        
+
         {/* Results */}
        {order && showTracking && (
         
           <div className="fade-in" style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(24px,4vw,40px) 16px clamp(48px,8vw,80px)' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
   <button
-    onClick={() => setShowTracking(false)}
+  onClick={() => {
+  setShowTracking(false);
+  setOrder(null);          // ✅ reset order
+  setSearched(false);      // ✅ reset search state
+  setError('');            // ✅ clear errors
+}}
     style={{
       background: 'transparent',
       border: '1px solid #e8e6e1',

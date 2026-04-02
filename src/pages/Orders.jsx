@@ -7,7 +7,7 @@ import axios from "axios";
 import WhatsAppButton from "../components/WhatsAppButton";
 import SkeletonOrderCard from "../components/SkeletonOrderCard";
 import ComplaintModal, { StatusBadge } from "../components/ComplaintModal";
-import { ChevronLeft, X, HelpCircle, Package, Zap, Tag, Truck, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronLeft, X, HelpCircle, Package, Zap, Tag, Truck, ChevronDown, ChevronUp, Copy } from "lucide-react";
 import { toast } from "react-toastify";
 
 const Orders = () => {
@@ -319,31 +319,59 @@ const Orders = () => {
             : "bg-gray-50 border-gray-200"
         }`}>
           {/* Left: label chips */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Package size={13} className={priorityDelivery && !allCancelled ? "text-white" : "text-gray-400"} />
-            <span className={`text-[10px] sm:text-[11px] font-bold tracking-[1.5px] uppercase ${
-              priorityDelivery && !allCancelled ? "text-white" : "text-gray-500"
-            }`}>
-              {isMulti ? `${items.length} Items` : "1 Item"}
-            </span>
+         <div className="flex items-center gap-2 flex-wrap">
+  <Package size={13} className={priorityDelivery && !allCancelled ? "text-white" : "text-gray-400"} />
 
-            {priorityDelivery && !allCancelled && (
-              <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold bg-yellow-400 text-black border border-yellow-500 px-2 py-0.5 rounded-full">
-                <Zap size={9} className="fill-black" />
-                Same-Day Priority
-              </span>
-            )}
-            {someCancelled && !allCancelled && (
-              <span className="text-[9px] sm:text-[10px] font-semibold bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full">
-                Partial Cancellation
-              </span>
-            )}
-            {allCancelled && (
-              <span className="text-[9px] sm:text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full">
-                Fully Cancelled
-              </span>
-            )}
-          </div>
+  <span className={`text-[10px] sm:text-[11px] font-bold tracking-[1.5px] uppercase ${
+    priorityDelivery && !allCancelled ? "text-white" : "text-gray-500"
+  }`}>
+    {isMulti ? `${items.length} Items` : "1 Item"}
+  </span>
+
+  {/* ✅ ORDER ID + COPY */}
+  <p className={`text-[9px] sm:text-[10px] font-mono tracking-wide flex items-center gap-2 ${
+    priorityDelivery && !allCancelled ? "text-gray-300" : "text-gray-400"
+  }`}>
+    ID:
+    <span className={`${priorityDelivery && !allCancelled ? "text-white" : "text-gray-700"} font-semibold`}>
+      {orderId}
+    </span>
+
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(orderId);
+        toast.success("Order ID copied!");
+      }}
+      className={`ml-1 transition-colors ${
+        priorityDelivery && !allCancelled
+          ? "text-gray-300 hover:text-white"
+          : "text-gray-400 hover:text-black"
+      }`}
+      title="Copy Order ID"
+    >
+      <Copy size={12} />
+    </button>
+  </p>
+
+  {priorityDelivery && !allCancelled && (
+    <span className="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold bg-yellow-400 text-black border border-yellow-500 px-2 py-0.5 rounded-full">
+      <Zap size={9} className="fill-black" />
+      Same-Day Priority
+    </span>
+  )}
+
+  {someCancelled && !allCancelled && (
+    <span className="text-[9px] sm:text-[10px] font-semibold bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full">
+      Partial Cancellation
+    </span>
+  )}
+
+  {allCancelled && (
+    <span className="text-[9px] sm:text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full">
+      Fully Cancelled
+    </span>
+  )}
+</div>
 
           {/* Right: date + payment */}
           <div className={`text-[10px] sm:text-[11px] font-medium text-right leading-snug ${
