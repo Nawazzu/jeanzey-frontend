@@ -22,6 +22,7 @@ const PremiumTimeline = React.lazy(() => import('../components/PremiumTimeline')
 const DenimSplit = React.lazy(() => import('../components/DenimSplit'))
 const BestSeller = React.lazy(() => import('../components/BestSeller'))
 const Testimonials = React.lazy(() => import('../components/Testimonials'))
+const CategoryCarousel = React.lazy(()=> import('../components/CategoryCarousel'))
 
 
 // Unused imports kept as comments to preserve original structure
@@ -65,6 +66,8 @@ const Home = () => {
         <h2 className="sr-only">Latest Collection</h2>
         <LatestCollection/>
       </section>
+
+      <CategoryCarousel />
 
       <MumbaiNoticeBar/>
       <AnimatedBanner/>

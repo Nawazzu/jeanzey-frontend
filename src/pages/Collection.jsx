@@ -26,6 +26,8 @@ const Collection = () => {
   const [isLoading, setIsLoading]           = useState(true);
   // Grid columns: 2 | 3 | 4
   const [gridCols, setGridCols]             = useState(3);
+  // FIX 1: Track hovered card by index — replaces CSS-only hover which breaks on some cards
+  const [hoveredCard, setHoveredCard]       = useState(null);
 
   // Price bounds — derived once from products
   const [minBound, setMinBound]         = useState(0);
@@ -170,11 +172,11 @@ const Collection = () => {
   const hasActiveFilters = category.length > 0 || priceApplied;
 
   // Grid column class map
-  const gridClass = {
-    2: "grid-cols-2",
-    3: "grid-cols-2 sm:grid-cols-3",
-    4: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4",
-  };
+const gridClass = {
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+};
 
   // Grid switcher icons
   const GridIcon2 = () => (
@@ -354,17 +356,18 @@ const Collection = () => {
           transform: translateX(0);
           transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Product card hover overlay */
+        /* Product card image scale */
         .prod-card-img { transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
-        .prod-card:hover .prod-card-img { transform: scale(1.04); }
+        .prod-card-img.hovered { transform: scale(1.04); }
+        /* Hover overlay */
         .prod-card-overlay {
           position: absolute; inset: 0;
           background: rgba(0,0,0,0);
           transition: background 0.4s ease;
           pointer-events: none;
         }
-        .prod-card:hover .prod-card-overlay { background: rgba(0,0,0,0.08); }
-        /* Quick add button */
+        .prod-card-overlay.hovered { background: rgba(0,0,0,0.08); }
+        /* Quick add button — driven by React state not CSS hover */
         .quick-add {
           position: absolute; bottom: 0; left: 0; right: 0;
           background: rgba(10,10,10,0.92);
@@ -379,7 +382,7 @@ const Collection = () => {
           transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
           pointer-events: none;
         }
-        .prod-card:hover .quick-add { transform: translateY(0); pointer-events: auto; }
+        .quick-add.hovered { transform: translateY(0); pointer-events: auto; }
         /* Grid switcher button */
         .grid-btn { transition: all 0.2s ease; }
         .grid-btn.active { background: #111; color: #fff; }
@@ -490,15 +493,32 @@ const Collection = () => {
             </button>
           </div>
 
-          {/* Mobile: active chips + sort row */}
+          {/* Mobile: active chips + sort row + FIX 2: grid switcher added here for mobile/tablet */}
           <div className="sm:hidden flex flex-col gap-2 mb-1">
-            {/* Sort + count */}
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-400">{filterProducts.length} items</p>
+            {/* Sort + count + grid switcher */}
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-gray-400 flex-shrink-0">{filterProducts.length} items</p>
+              {/* FIX 2: Grid switcher visible on mobile */}
+              <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-0.5">
+                {[
+                  { cols: 2, Icon: GridIcon2 },
+                  { cols: 3, Icon: GridIcon3 },
+                  { cols: 4, Icon: GridIcon4 },
+                ].map(({ cols, Icon }) => (
+                  <button
+                    key={cols}
+                    onClick={() => setGridCols(cols)}
+                    className={`grid-btn p-1.5 rounded-md ${gridCols === cols ? 'active' : ''}`}
+                    title={`${cols} columns`}
+                  >
+                    <Icon />
+                  </button>
+                ))}
+              </div>
               <select
                 onChange={(e) => setSortType(e.target.value)}
                 value={sortType}
-                className="border border-gray-200 text-xs px-3 py-1.5 rounded-full bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                className="border border-gray-200 text-xs px-2 py-1.5 rounded-full bg-white focus:outline-none focus:ring-1 focus:ring-black flex-shrink-0"
               >
                 <option value="relavent">Relevant</option>
                 <option value="low-high">Price: Low → High</option>
@@ -572,6 +592,9 @@ const Collection = () => {
                   to={`/product/${item._id}`}
                   className="prod-card group block cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
+                  // FIX 1: React state hover — works reliably on every card position
+                  onMouseEnter={() => setHoveredCard(index)}
+                  onMouseLeave={() => setHoveredCard(null)}
                 >
                   {/* Image container */}
                   <div className="relative overflow-hidden bg-[#f2f2f0] aspect-[3/4]" style={{ borderRadius: '4px' }}>
@@ -583,16 +606,16 @@ const Collection = () => {
                         src={img}
                         alt={item.name}
                         loading="lazy"
-                        className={`prod-card-img absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
+                        className={`prod-card-img absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${hoveredCard === index ? 'hovered' : ''} ${
                           i === 0
                             ? "opacity-100"
-                            : "opacity-0 group-hover:opacity-100"
+                            : `opacity-0 ${hoveredCard === index ? 'opacity-100' : ''}`
                         }`}
                       />
                     ))}
 
                     {/* Hover overlay */}
-                    <div className="prod-card-overlay" />
+                    <div className={`prod-card-overlay ${hoveredCard === index ? 'hovered' : ''}`} />
 
                     {/* Stock badges */}
                     {(() => {
@@ -642,8 +665,8 @@ const Collection = () => {
                       <Heart size={14} className={isInWishlist(item._id) ? "fill-white" : ""} />
                     </button>
 
-                    {/* Quick view slide-up */}
-                    <div className="quick-add">View Product</div>
+                    {/* Quick view slide-up — driven by React state, works on all cards */}
+                    <div className={`quick-add ${hoveredCard === index ? 'hovered' : ''}`}>View Product</div>
 
                   </div>
 
