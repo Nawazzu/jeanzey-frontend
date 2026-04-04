@@ -68,6 +68,7 @@ const Orders = () => {
       if (res.data.success) {
         const grouped = res.data.orders.map((order) => ({
           orderId:            order._id,
+          shortOrderId:       order.orderId || null,
           date:               order.date,
           payment:            order.payment,
           paymentMethod:      order.paymentMethod,
@@ -289,7 +290,7 @@ const Orders = () => {
   // UNIFIED ORDER CARD — works for both single & multi-item
   // ════════════════════════════════════════════════════════════════════════
   const renderOrderCard = (order) => {
-    const { orderId, date, paymentMethod, amount, items, priorityDelivery } = order;
+    const { orderId, shortOrderId, date, paymentMethod, amount, items, priorityDelivery } = order;
 
     const allCancelled  = items.every((i) => i.status?.toLowerCase() === "cancelled");
     const someCancelled = items.some((i)  => i.status?.toLowerCase() === "cancelled");
@@ -297,6 +298,9 @@ const Orders = () => {
     const repItem       = items.find((i) => i.status?.toLowerCase() !== "cancelled") || items[0];
     const progress      = getProgressStep(repItem.status);
     const isMulti       = items.length > 1;
+
+    // Display ID: use short readable ID if available, fallback to full _id
+    const displayId = shortOrderId || orderId;
 
     // ── Card border/bg: priority (gold) > cancelled (red) > delivered (green) > default ──
     const cardClass = priorityDelivery && !allCancelled
@@ -328,18 +332,18 @@ const Orders = () => {
     {isMulti ? `${items.length} Items` : "1 Item"}
   </span>
 
-  {/* ✅ ORDER ID + COPY */}
+  {/* ✅ ORDER ID + COPY — shows short ID if available */}
   <p className={`text-[9px] sm:text-[10px] font-mono tracking-wide flex items-center gap-2 ${
     priorityDelivery && !allCancelled ? "text-gray-300" : "text-gray-400"
   }`}>
     ID:
     <span className={`${priorityDelivery && !allCancelled ? "text-white" : "text-gray-700"} font-semibold`}>
-      {orderId}
+      {displayId}
     </span>
 
     <button
       onClick={() => {
-        navigator.clipboard.writeText(orderId);
+        navigator.clipboard.writeText(displayId);
         toast.success("Order ID copied!");
       }}
       className={`ml-1 transition-colors ${

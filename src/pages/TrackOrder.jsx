@@ -4,13 +4,14 @@ import axios from 'axios';
 import { ShopContext } from '../context/ShopContext';
 import { Helmet } from 'react-helmet-async';
 import WhatsAppButton from '../components/WhatsAppButton';
+import { Check, Package, Truck, Clock, MapPin, Phone, Copy, RefreshCw, XCircle, Star, Zap } from "lucide-react";
 
 const STATUSES = [
-  { key: 'Order Placed',      label: 'Order Placed',      desc: 'Your order has been received and confirmed.', icon: '✦' },
-  { key: 'Packing',           label: 'Packing',           desc: 'Your items are being carefully packed.',      icon: '◈' },
-  { key: 'Shipped',           label: 'Shipped',           desc: 'Your order is on its way.',                   icon: '⬡' },
-  { key: 'Out for Delivery',  label: 'Out for Delivery',  desc: 'Your order is out for delivery today.',       icon: '❋' },
-  { key: 'Delivered',         label: 'Delivered',         desc: 'Your order has been delivered.',              icon: '✓' },
+  { key: 'Order Placed', label: 'Order Placed', desc: 'Your order has been received and confirmed.', icon: <Star size={12} /> },
+  { key: 'Packing', label: 'Packing', desc: 'Your items are being carefully packed.', icon: <Package size={12} /> },
+  { key: 'Shipped', label: 'Shipped', desc: 'Your order is on its way.', icon: <Truck size={12} /> },
+  { key: 'Out for Delivery', label: 'Out for Delivery', desc: 'Your order is out for delivery today.', icon: <Truck size={12} /> },
+  { key: 'Delivered', label: 'Delivered', desc: 'Your order has been delivered.', icon: <Check size={12} /> },
 ];
 
 const getStatusIndex = (status) => {
@@ -71,12 +72,13 @@ const TrackOrder = () => {
     setLoading(false);
   };
 
-  // Refresh status — re-fetches same order from backend
+  // CHANGE 1: Refresh uses short orderId if available, falls back to _id
   const handleRefresh = async () => {
-    if (!order?._id || refreshing) return;
+    if (!order || refreshing) return;
     setRefreshing(true);
     try {
-      const res = await axios.post(`${backendUrl}/api/order/track`, { orderId: order._id });
+      const trackId = order.orderId || order._id;
+      const res = await axios.post(`${backendUrl}/api/order/track`, { orderId: trackId });
       if (res.data.success) {
         setOrder(res.data.order);
         setLastRefreshed(new Date());
@@ -85,9 +87,11 @@ const TrackOrder = () => {
     setRefreshing(false);
   };
 
+  // CHANGE 2: Copy uses short orderId if available, falls back to _id
   const handleCopyId = () => {
-    if (!order?._id) return;
-    navigator.clipboard.writeText(order._id);
+    if (!order) return;
+    const displayId = order.orderId || order._id;
+    navigator.clipboard.writeText(displayId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -135,7 +139,7 @@ const TrackOrder = () => {
         }
       `}</style>
 
-      <div style={{ minHeight: '100vh', background: '#fafaf8', fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}>
+      <div style={{ minHeight: '100vh', background: '#fafaf8', fontFamily: "'Playfair Display', serif" }}>
 
         {/* Hero */}
         <div style={{ borderBottom: '1px solid #e8e6e1', padding: 'clamp(40px,8vw,72px) 24px clamp(32px,5vw,52px)', textAlign: 'center', background: '#fff', position: 'relative', overflow: 'hidden' }}>
@@ -171,7 +175,7 @@ const TrackOrder = () => {
                 value={orderId}
                 onChange={e => setOrderId(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleTrack()}
-                placeholder="e.g. 6849f2a3c1b2d3e4f5a6b7c8"
+                placeholder="e.g. JZ-260318-4A2F"
                 style={{
                   flex: 1,
                   border: '1px solid #ddd',
@@ -272,9 +276,10 @@ const TrackOrder = () => {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 6px', fontFamily: 'sans-serif' }}>Order ID</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <p style={{ fontSize: 'clamp(11px,1.5vw,13px)', fontFamily: 'monospace', color: '#1a1a1a', margin: 0, letterSpacing: '0.05em', wordBreak: 'break-all' }}>{order._id}</p>
+                    {/* CHANGE 3: Display short orderId, fallback to _id for old orders */}
+                    <p style={{ fontSize: 'clamp(13px,1.5vw,16px)', fontFamily: 'monospace', color: '#1a1a1a', margin: 0, letterSpacing: '0.08em', fontWeight: 500 }}>{order.orderId || order._id}</p>
                     <button className="copy-btn" onClick={handleCopyId} title="Copy Order ID" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: copied ? '#b8860b' : '#bbb', padding: '2px', flexShrink: 0 }}>
-                      {copied ? '✓ Copied' : '⧉ Copy'}
+                   {copied ? 'Copied' : <Copy size={14} />}
                     </button>
                   </div>
                 </div>
@@ -290,7 +295,15 @@ const TrackOrder = () => {
                     <p style={{ fontSize: '13px', color: '#1a1a1a', margin: 0, fontFamily: 'sans-serif' }}>
                       {order.paymentMethod || 'COD'} ·{' '}
                       <span style={{ color: order.payment ? '#2d6a4f' : '#c0392b' }}>
-                        {order.payment ? '✓ Paid' : '⏳ Pending'}
+                       {order.payment ? (
+  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+    <Check size={14} /> Paid
+  </span>
+) : (
+  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+    <Clock size={14} /> Pending
+  </span>
+)}
                       </span>
                     </p>
                   </div>
@@ -301,7 +314,9 @@ const TrackOrder = () => {
                   {order.priorityDelivery && (
                     <div>
                       <p style={{ fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#999', margin: '0 0 4px', fontFamily: 'sans-serif' }}>Delivery</p>
-                      <p style={{ fontSize: '13px', color: '#b8860b', margin: 0, fontFamily: 'sans-serif' }}>⚡ Priority (24hrs)</p>
+       <p style={{ fontSize: '13px', color: '#b8860b', margin: 0, fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', gap: '6px' }}>
+  <Zap size={14} /> Priority (24hrs)
+</p>
                     </div>
                   )}
                   {lastRefreshed && (
@@ -344,7 +359,7 @@ const TrackOrder = () => {
                     opacity: refreshing ? 0.6 : 1,
                   }}
                 >
-                  <span className={refreshing ? 'refresh-spin' : ''} style={{ display: 'inline-block', fontSize: '12px' }}>↻</span>
+           <RefreshCw size={14} className={refreshing ? 'refresh-spin' : ''} />
                   {refreshing ? 'Refreshing...' : 'Refresh Status'}
                 </button>
               </div>
@@ -352,7 +367,7 @@ const TrackOrder = () => {
               {isCancelled ? (
                 <div style={{ textAlign: 'center', padding: '24px 0' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fdf0f0', border: '2px solid #e74c3c', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '20px' }}>
-                    ✕
+                  <XCircle size={18} />
                   </div>
                   <p style={{ fontSize: '18px', color: '#c0392b', fontWeight: 400, margin: '0 0 8px' }}>Order Cancelled</p>
                   <p style={{ fontSize: '13px', color: '#999', margin: 0, fontFamily: 'sans-serif', fontStyle: 'italic' }}>This order has been cancelled.</p>
@@ -400,7 +415,9 @@ const TrackOrder = () => {
                                 <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                               </svg>
                             ) : (
-                              <span style={{ color: '#ccc', fontSize: '10px' }}>{s.icon}</span>
+                             <span style={{ color: '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+  {s.icon}
+</span>
                             )}
                           </div>
                         </div>
@@ -502,7 +519,7 @@ const TrackOrder = () => {
                 </p>
                 {order.address.phone && (
                   <p style={{ fontSize: '13px', color: '#666', margin: '0', fontFamily: 'sans-serif' }}>
-                    📞 {order.address.phone}
+                   <Phone size={14} style={{ display: 'inline', marginRight: '6px' }} /> {order.address.phone}
                   </p>
                 )}
               </div>

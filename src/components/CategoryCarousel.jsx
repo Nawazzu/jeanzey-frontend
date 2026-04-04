@@ -40,11 +40,13 @@ const CARDS = [
   },
 ];
 
+
 const CategoryCarousel = () => {
   const navigate = useNavigate();
   const trackRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(2);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
   const dragStart = useRef(null);
   const dragDelta = useRef(0);
 
@@ -57,26 +59,36 @@ const CategoryCarousel = () => {
     window.addEventListener("pointerup", onPointerUp);
   };
 
-  const onPointerMove = (e) => {
-    if (dragStart.current === null) return;
-    dragDelta.current = e.clientX - dragStart.current;
-    if (Math.abs(dragDelta.current) > 6) setIsDragging(true);
-  };
+const onPointerMove = (e) => {
+  if (dragStart.current === null) return;
+  dragDelta.current = e.clientX - dragStart.current;
 
-  const onPointerUp = () => {
-    window.removeEventListener("pointermove", onPointerMove);
-    window.removeEventListener("pointerup", onPointerUp);
-    if (Math.abs(dragDelta.current) > 40) {
-      if (dragDelta.current < 0) {
-        setActiveIdx((p) => (p + 1) % CARDS.length);
-      } else {
-        setActiveIdx((p) => (p - 1 + CARDS.length) % CARDS.length);
-      }
+  if (Math.abs(dragDelta.current) > 6) setIsDragging(true);
+
+  // ✅ Smooth live movement
+  setDragOffset(dragDelta.current);
+};
+
+const onPointerUp = () => {
+  window.removeEventListener("pointermove", onPointerMove);
+  window.removeEventListener("pointerup", onPointerUp);
+
+  if (Math.abs(dragDelta.current) > 40) {
+    if (dragDelta.current < 0) {
+      setActiveIdx((p) => (p + 1) % CARDS.length);
+    } else {
+      setActiveIdx((p) => (p - 1 + CARDS.length) % CARDS.length);
     }
-    dragStart.current = null;
-    dragDelta.current = 0;
-    setTimeout(() => setIsDragging(false), 50);
-  };
+  }
+
+  // ✅ Reset smoothly
+  setDragOffset(0);
+
+  dragStart.current = null;
+  dragDelta.current = 0;
+
+  setTimeout(() => setIsDragging(false), 50);
+};
 
   const handleCardClick = (idx) => {
     if (isDragging) return;
@@ -97,7 +109,10 @@ const CategoryCarousel = () => {
       }}
     >
       <style>{`
-        .cc-section { user-select: none; }
+        .cc-section { user-select: none;
+        touch-action: pan-y;
+         }
+
         .cc-card {
           position: absolute;
           top: 50%;
@@ -286,7 +301,7 @@ const CategoryCarousel = () => {
               style={{
                 width: cardW,
                 height: cardH,
-                transform: `translate(-50%, -50%) translateX(${xShift}px) scale(${scale}) rotate(${rotate}deg)`,
+         transform: `translate(-50%, -50%) translateX(${xShift + dragOffset * 0.35}px) scale(${scale}) rotate(${rotate}deg)`,
                 zIndex,
                 opacity,
               }}
