@@ -117,7 +117,7 @@ const PlaceOrder = () => {
       // Previously it was incorrectly nested inside delivery_date's toLocaleDateString options object
       const emailParams = {
         name: `${selectedAddress.firstName} ${selectedAddress.lastName}`,
-        order_id: `${orderDetails.order_id?.slice(-10).toUpperCase()}`,
+      order_id: orderDetails.short_order_id || orderDetails.order_id?.slice(-10).toUpperCase(),
         order_items: orderItemsList,
         subtotal: `₹${subtotal}`,
         shipping_fee: `₹${delivery_fee}`,
