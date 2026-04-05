@@ -12,7 +12,7 @@ import WhatsAppButton from '../components/WhatsAppButton'
 // PERFORMANCE: VideoGallery moved out of lazy loading — it has autoPlay videos that
 // remount on every Suspense retry, causing 16.mp4 to download 6x repeatedly
 // Eager loading prevents the remount cycle
-import VideoGallery from '../components/VideoGallery'
+// import VideoGallery from '../components/VideoGallery'
 
 // Below-fold components — lazy loaded to reduce initial render
 const HoverTextCard = React.lazy(() => import('../components/HoverTextCard '))
@@ -90,10 +90,10 @@ const Home = () => {
       </Suspense>
 
       {/* VideoGallery outside Suspense — prevents autoPlay videos from remounting repeatedly */}
-      <section aria-label="Video Gallery">
+      {/* <section aria-label="Video Gallery">
         <h2 className="sr-only">Video Gallery</h2>
         <VideoGallery/>
-      </section>
+      </section> */}
 
       <Suspense fallback={null}>
 
