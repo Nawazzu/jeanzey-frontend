@@ -11,7 +11,9 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef(null);
+  
 
   const {
     getCartCount,
@@ -59,16 +61,16 @@ const Navbar = () => {
 
   if (location.pathname === "/login") return null;
 
-  const logout = () => {
-    navigate("/login");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userData");
-    setToken("");
-    setCartItems({});
-    setUserData(null);
-    setVisible(false);
-  };
-
+const logout = () => {
+  navigate("/login");
+  localStorage.removeItem("token");
+  localStorage.removeItem("userData");
+  setToken("");
+  setCartItems({});
+  setUserData(null);
+  setVisible(false);
+  setShowLogoutModal(false);
+};
   const navLinks = [
     { name: "HOME", to: "/" },
     { name: "COLLECTION", to: "/collection" },
@@ -251,7 +253,7 @@ const Navbar = () => {
                     </button>
                     <div className="flex justify-center items-center py-3">
                       <button
-                        onClick={logout}
+                       onClick={() => setShowLogoutModal(true)}
                         className="w-11/12 bg-black text-white py-2 text-sm font-semibold rounded-md hover:bg-red-600 transition-all duration-300 border border-gray-200"
                       >
                         Logout
@@ -401,7 +403,10 @@ const Navbar = () => {
                       {userData.email}
                     </p>
                     <button
-                      onClick={() => { logout(); setMobileMenu(false); }}
+                    onClick={() => {
+  setShowLogoutModal(true);
+  setMobileMenu(false);
+}}
                       className="w-full border border-white/20 text-white/70 text-[10px] tracking-[3px] uppercase py-3 hover:bg-white hover:text-black transition-all duration-300"
                     >
                       Logout
@@ -426,6 +431,56 @@ const Navbar = () => {
         isOpen={showAddressModal}
         onClose={() => setShowAddressModal(false)}
       />
+
+      <AnimatePresence>
+  {showLogoutModal && (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center">
+
+      {/* BACKDROP */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={() => setShowLogoutModal(false)}
+      />
+
+      {/* MODAL */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 40 }}
+        transition={{ duration: 0.25 }}
+        className="relative z-[1000] w-[90%] max-w-[340px] bg-[#0c0c0c] border border-white/10 p-6 rounded-lg"
+      >
+        <p className="text-white text-sm tracking-[2px] uppercase mb-3">
+          Confirm Logout
+        </p>
+
+        <p className="text-white/60 text-xs mb-6">
+          Are you sure you want to logout from your account?
+        </p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowLogoutModal(false)}
+            className="flex-1 border border-white/20 text-white/60 py-2 text-[10px] tracking-[2px] uppercase hover:bg-white hover:text-black transition-all"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={logout}
+            className="flex-1 bg-red-500 text-white py-2 text-[10px] tracking-[2px] uppercase hover:bg-red-600 transition-all"
+          >
+            Logout
+          </button>
+        </div>
+      </motion.div>
+
+    </div>
+  )}
+</AnimatePresence>
     </>
   );
 };
