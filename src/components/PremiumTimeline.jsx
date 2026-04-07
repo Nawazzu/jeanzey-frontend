@@ -36,33 +36,32 @@ const PremiumTimeline = () => {
   useEffect(() => {
     // Animate the horizontal line
     if (lineRef.current) {
-      gsap.from(lineRef.current, {
-        scaleX: 0,
-        duration: 1.5,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: lineRef.current,
-          start: "top 80%",
-        },
-      });
+    gsap.fromTo(
+  lineRef.current,
+  { scaleX: 0 },
+  {
+    scaleX: 1,
+    duration: 1.2,
+    ease: "power2.out",
+  }
+);
     }
 
     // Animate each timeline item
-    itemRefs.current.forEach((item, index) => {
-      if (item) {
-        gsap.from(item, {
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          delay: index * 0.15,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: item,
-            start: "top 85%",
-          },
-        });
-      }
-    });
+gsap.fromTo(
+  itemRefs.current,
+  { opacity: 0, y: 30 },
+  {
+    opacity: 1,
+    y: 0,
+    stagger: 0.15,
+    scrollTrigger: {
+      trigger: sectionRef.current,
+      start: "top 75%",
+    },
+  }
+);
+     
   }, []);
 
   return (

@@ -10,40 +10,42 @@ const Hero = () => {
   const imageRef = useRef(null);
   const badgeRef = useRef(null);
 
-  useEffect(() => {
-    // Animate the Mumbai badge
-    gsap.from(badgeRef.current, {
-      opacity: 0,
-      y: -20,
+useEffect(() => {
+  gsap.fromTo(
+    textRef.current,
+    { opacity: 0, x: -120 },
+    {
+      opacity: 1,
+      x: 0,
       duration: 1.5,
-      ease: 'power2.out',
+      ease: "power2.out",
+      delay: 0.2, // 👈 important
+    }
+  );
+
+  gsap.fromTo(
+    imageRef.current,
+    { opacity: 0, x: 120 },
+    {
+      opacity: 1,
+      x: 0,
+      duration: 1.5,
+      ease: "power2.out",
       delay: 0.3,
-    });
+    }
+  );
 
-    // Animate the text section with smooth entrance
-    gsap.from(textRef.current, {
-      opacity: 0,
-      x: -120,
-      duration: 2.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: textRef.current,
-        start: 'top 80%',
-      },
-    });
-
-    // Animate the image section
-    gsap.from(imageRef.current, {
-      opacity: 0,
-      x: 120,
-      duration: 2.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: imageRef.current,
-        start: 'top 80%',
-      },
-    });
-  }, []);
+  gsap.fromTo(
+    badgeRef.current,
+    { opacity: 0, y: -20 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: "power2.out",
+    }
+  );
+}, []);
 
   return (
     <div className='flex flex-col sm:flex-row border border-gray-200 mt-6 md:mt-8 bg-gradient-to-br from-stone-50 via-white to-stone-50 min-h-[450px] sm:min-h-[500px] md:min-h-[550px] lg:min-h-[600px] relative overflow-hidden'>

@@ -220,7 +220,7 @@ const onPointerUp = () => {
   font-size: 11px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: #9aa0a6;
+  color: #92620a;
   margin: 0 0 14px;
 }
      .cc-title {

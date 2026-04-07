@@ -99,7 +99,7 @@ const logout = () => {
               }`}
               style={{ fontFamily: "'Faster One', system-ui", fontWeight: 400 }}
             >
-              JEAN-ZEY
+              JEANZEY
             </span>
           </Link>
 
@@ -136,7 +136,7 @@ const logout = () => {
           <div className="flex items-center gap-4 md:gap-6">
 
             {/* Wishlist Icon */}
-            <Link to="/wishlist" className="relative">
+         <Link to="/wishlist" className="relative" aria-label="Wishlist">
               <motion.div
                 whileHover={{
                   scale: 1.1,
@@ -265,7 +265,7 @@ const logout = () => {
             </div>
 
             {/* Cart Icon */}
-            <Link to="/cart" className="relative" id="cart-icon">
+       <Link to="/cart" className="relative" id="cart-icon" aria-label="Shopping cart">
               <motion.div
                 whileHover={{
                   scale: 1.1,
@@ -341,7 +341,7 @@ const logout = () => {
                   className="text-white text-lg tracking-[5px] uppercase"
                   style={{ fontFamily: "'Faster One', system-ui", fontWeight: 400 }}
                 >
-                  Jean-Zey
+                  Jeanzey
                 </span>
                 <button
                   onClick={() => setMobileMenu(false)}

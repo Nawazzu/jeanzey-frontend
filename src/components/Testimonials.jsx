@@ -31,34 +31,36 @@ const Testimonial = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
-
-  useEffect(() => {
-    if (sectionRef.current) {
-      gsap.from(sectionRef.current, {
-        opacity: 0,
-        y: 50,
+useEffect(() => {
+  if (sectionRef.current) {
+    gsap.fromTo(
+      sectionRef.current,
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
         duration: 1,
         ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-        },
-      });
-    }
+      }
+    );
+  }
 
-    if (titleRef.current) {
-      gsap.from(titleRef.current, {
-        opacity: 0,
-        y: -30,
-        duration: 1.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: titleRef.current,
-          start: "top 90%",
-        },
-      });
-    }
-  }, []);
+  if (titleRef.current) {
+  gsap.fromTo(
+  sectionRef.current,
+  { opacity: 0, y: 50 },
+  {
+    opacity: 1,
+    y: 0,
+    duration: 1,
+    scrollTrigger: {
+      trigger: sectionRef.current,
+      start: "top 75%",
+    },
+  }
+);
+  }
+}, []);
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);

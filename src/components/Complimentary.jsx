@@ -61,7 +61,7 @@ const Complimentary = () => {
     },
     {
       id: 3,
-      name: "Jeanzey Perfume",
+      name: "Perfumes",
       desc: "An exclusive mini perfume to add a luxurious fragrance to your day — our special gift for you.",
       img: "/images/comp3.jpg",
     },
