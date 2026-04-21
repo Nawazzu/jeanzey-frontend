@@ -86,8 +86,6 @@ const Login = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap');
-
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         .jz-root { min-height: 100vh; display: flex; flex-direction: column; background: #fff; font-family: 'Jost', sans-serif; }

@@ -24,21 +24,15 @@ const Collection = () => {
   const [category, setCategory]             = useState([]);
   const [sortType, setSortType]             = useState("relavent");
   const [isLoading, setIsLoading]           = useState(true);
-  // Grid columns: 2 | 3 | 4
   const [gridCols, setGridCols]             = useState(3);
-  // FIX 1: Track hovered card by index — replaces CSS-only hover which breaks on some cards
   const [hoveredCard, setHoveredCard]       = useState(null);
 
-  // Price bounds — derived once from products
   const [minBound, setMinBound]         = useState(0);
   const [maxBound, setMaxBound]         = useState(10000);
-  // Live slider state (updates as thumb drags)
   const [priceRange, setPriceRange]     = useState([0, 10000]);
-  // Applied range — what's actually filtering
   const [appliedRange, setAppliedRange] = useState([0, 10000]);
   const [priceApplied, setPriceApplied] = useState(false);
 
-  // Derive real bounds once
   useEffect(() => {
     if (products && products.length > 0) {
       const prices = products.map((p) => Number(p.price));
@@ -57,7 +51,6 @@ const Collection = () => {
     );
   };
 
-  // Core filter — always uses appliedRange for price
   const applyFilter = useCallback((cats = category, range = appliedRange) => {
     let copy = products.slice();
     if (showSearch && search) {
@@ -76,7 +69,6 @@ const Collection = () => {
     return copy;
   }, [products, search, showSearch]);
 
-  // Re-filter whenever category / search / products change
   useEffect(() => {
     if (products && products.length > 0) {
       setIsLoading(false);
@@ -84,7 +76,6 @@ const Collection = () => {
     }
   }, [category, search, showSearch, products, appliedRange]);
 
-  // Sort on top of filtered list
   useEffect(() => {
     setFilterProducts((prev) => {
       const copy = prev.slice();
@@ -103,9 +94,8 @@ const Collection = () => {
     setTimeout(() => button.classList.remove("heart-burst"), 400);
   };
 
-  // Slider helpers
   const sliderTrackRef = useRef(null);
-  const dragging = useRef(null); // "min" | "max" | null
+  const dragging = useRef(null);
 
   const snapTo50 = (val) => Math.round(val / 50) * 50;
 
@@ -147,7 +137,6 @@ const Collection = () => {
     window.removeEventListener("pointerup", onPointerUp);
   }, [onPointerMove]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
@@ -171,14 +160,12 @@ const Collection = () => {
   const maxPct = getPercent(priceRange[1]);
   const hasActiveFilters = category.length > 0 || priceApplied;
 
-  // Grid column class map
-const gridClass = {
-  2: "grid-cols-2",
-  3: "grid-cols-3",
-  4: "grid-cols-4",
-};
+  const gridClass = {
+    2: "grid-cols-2",
+    3: "grid-cols-3",
+    4: "grid-cols-4",
+  };
 
-  // Grid switcher icons
   const GridIcon2 = () => (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <rect x="1" y="1" width="6" height="14" rx="1" fill="currentColor"/>
@@ -201,11 +188,8 @@ const gridClass = {
     </svg>
   );
 
-  // ── Filter Panel — JSX variable (NOT a component) to prevent remount on re-render ──
   const filterContent = (
     <div className="flex flex-col gap-5">
-
-      {/* Categories */}
       <div>
         <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-3">Categories</p>
         <div className="flex flex-col gap-2.5">
@@ -240,7 +224,6 @@ const gridClass = {
 
       <div className="h-px bg-gray-100" />
 
-      {/* Price Range — custom pointer-event slider */}
       <div>
         <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-1">Price Range</p>
         <p className="text-sm font-medium text-gray-800 mb-5">
@@ -249,13 +232,11 @@ const gridClass = {
           {currency}{priceRange[1].toLocaleString("en-IN")}
         </p>
 
-        {/* Track */}
         <div
           ref={sliderTrackRef}
           className="relative mx-3"
           style={{ height: "4px", background: "#e5e7eb", borderRadius: "2px", touchAction: "none" }}
         >
-          {/* Filled range */}
           <div
             style={{
               position: "absolute",
@@ -266,8 +247,6 @@ const gridClass = {
               borderRadius: "2px",
             }}
           />
-
-          {/* Min thumb */}
           <div
             onPointerDown={onPointerDown("min")}
             style={{
@@ -287,8 +266,6 @@ const gridClass = {
               zIndex: 3,
             }}
           />
-
-          {/* Max thumb */}
           <div
             onPointerDown={onPointerDown("max")}
             style={{
@@ -330,7 +307,6 @@ const gridClass = {
         </div>
       </div>
 
-      {/* Clear all */}
       {hasActiveFilters && (
         <>
           <div className="h-px bg-gray-100" />
@@ -351,15 +327,12 @@ const gridClass = {
   return (
     <>
       <style>{`
-        /* Slide-in drawer animation */
         .drawer-open {
           transform: translateX(0);
           transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Product card image scale */
         .prod-card-img { transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
         .prod-card-img.hovered { transform: scale(1.04); }
-        /* Hover overlay */
         .prod-card-overlay {
           position: absolute; inset: 0;
           background: rgba(0,0,0,0);
@@ -367,7 +340,6 @@ const gridClass = {
           pointer-events: none;
         }
         .prod-card-overlay.hovered { background: rgba(0,0,0,0.08); }
-        /* Quick add button — driven by React state not CSS hover */
         .quick-add {
           position: absolute; bottom: 0; left: 0; right: 0;
           background: rgba(10,10,10,0.92);
@@ -383,7 +355,6 @@ const gridClass = {
           pointer-events: none;
         }
         .quick-add.hovered { transform: translateY(0); pointer-events: auto; }
-        /* Grid switcher button */
         .grid-btn { transition: all 0.2s ease; }
         .grid-btn.active { background: #111; color: #fff; }
         .grid-btn:not(.active) { background: transparent; color: #bbb; }
@@ -399,7 +370,6 @@ const gridClass = {
 
       <h1 className="sr-only">Shop All Collections — Men's & Women's Fashion</h1>
 
-      {/* Visually hidden H2 for SEO */}
       <h2 style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',whiteSpace:'nowrap',border:0}}>
         Shop Men's &amp; Women's Fashion — Jeans, Shirts, T-Shirts &amp; Combos | Jean-Zey Mumbai
       </h2>
@@ -407,14 +377,11 @@ const gridClass = {
       {/* ── MOBILE LEFT DRAWER ── */}
       {showFilter && (
         <div className="fixed inset-0 z-50 sm:hidden flex">
-          {/* Dark overlay — tap to close */}
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setShowFilter(false)}
           />
-          {/* Drawer panel */}
           <div className="relative w-[78vw] max-w-[300px] h-full bg-white shadow-2xl flex flex-col drawer-open z-10">
-            {/* Drawer header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <p className="text-sm font-bold uppercase tracking-widest text-gray-900">Filters</p>
               <button
@@ -424,13 +391,9 @@ const gridClass = {
                 <X size={17} />
               </button>
             </div>
-
-            {/* Scrollable filter content */}
             <div className="flex-1 overflow-y-auto px-5 py-5">
               {filterContent}
             </div>
-
-            {/* Footer — apply + close */}
             <div className="px-5 py-4 border-t border-gray-100">
               <button
                 onClick={() => setShowFilter(false)}
@@ -455,7 +418,6 @@ const gridClass = {
             <ChevronLeft size={22} />
             <span>Back to Home</span>
           </button>
-
           <div>
             <p className="my-2 text-xl font-medium tracking-wide uppercase">FILTERS</p>
             <div className="mt-4">
@@ -476,11 +438,9 @@ const gridClass = {
               <ChevronLeft size={17} />
               Back
             </button>
-
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-800">
               Collections
             </p>
-
             <button
               onClick={() => setShowFilter(true)}
               className="relative flex items-center gap-1.5 border border-gray-300 rounded-full px-3 py-1.5 text-xs font-medium text-gray-700 hover:border-black hover:text-black transition-all"
@@ -493,12 +453,10 @@ const gridClass = {
             </button>
           </div>
 
-          {/* Mobile: active chips + sort row + FIX 2: grid switcher added here for mobile/tablet */}
+          {/* Mobile: sort + grid switcher */}
           <div className="sm:hidden flex flex-col gap-2 mb-1">
-            {/* Sort + count + grid switcher */}
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-gray-400 flex-shrink-0">{filterProducts.length} items</p>
-              {/* FIX 2: Grid switcher visible on mobile */}
               <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-0.5">
                 {[
                   { cols: 2, Icon: GridIcon2 },
@@ -510,6 +468,7 @@ const gridClass = {
                     onClick={() => setGridCols(cols)}
                     className={`grid-btn p-1.5 rounded-md ${gridCols === cols ? 'active' : ''}`}
                     title={`${cols} columns`}
+                    aria-label={`${cols} column grid`}
                   >
                     <Icon />
                   </button>
@@ -526,19 +485,18 @@ const gridClass = {
               </select>
             </div>
 
-            {/* Active filter chips */}
             {hasActiveFilters && (
               <div className="flex flex-wrap gap-1.5">
                 {category.map((cat) => (
                   <span key={cat} className="flex items-center gap-1 bg-black text-white text-[11px] px-2.5 py-1 rounded-full">
                     {cat}
-                    <button onClick={() => toggleCategory(cat)}><X size={9} /></button>
+                    <button onClick={() => toggleCategory(cat)} aria-label={`Remove ${cat} filter`}><X size={9} /></button>
                   </span>
                 ))}
                 {priceApplied && (
                   <span className="flex items-center gap-1 bg-black text-white text-[11px] px-2.5 py-1 rounded-full">
                     {currency}{appliedRange[0].toLocaleString("en-IN")}–{currency}{appliedRange[1].toLocaleString("en-IN")}
-                    <button onClick={handleResetPrice}><X size={9} /></button>
+                    <button onClick={handleResetPrice} aria-label="Remove price filter"><X size={9} /></button>
                   </span>
                 )}
               </div>
@@ -552,7 +510,6 @@ const gridClass = {
               <span className="text-sm text-gray-400 font-light">{filterProducts.length} items</span>
             </div>
             <div className="flex items-center gap-4">
-              {/* Grid switcher */}
               <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1">
                 {[
                   { cols: 2, Icon: GridIcon2 },
@@ -564,6 +521,7 @@ const gridClass = {
                     onClick={() => setGridCols(cols)}
                     className={`grid-btn p-1.5 rounded-md ${gridCols === cols ? 'active' : ''}`}
                     title={`${cols} columns`}
+                    aria-label={`${cols} column grid`}
                   >
                     <Icon />
                   </button>
@@ -592,14 +550,11 @@ const gridClass = {
                   to={`/product/${item._id}`}
                   className="prod-card group block cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
-                  // FIX 1: React state hover — works reliably on every card position
                   onMouseEnter={() => setHoveredCard(index)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Image container */}
                   <div className="relative overflow-hidden bg-[#f2f2f0] aspect-[3/4]" style={{ borderRadius: '4px' }}>
 
-                    {/* Images */}
                     {item.image?.map((img, i) => (
                       <img
                         key={i}
@@ -614,10 +569,8 @@ const gridClass = {
                       />
                     ))}
 
-                    {/* Hover overlay */}
                     <div className={`prod-card-overlay ${hoveredCard === index ? 'hovered' : ''}`} />
 
-                    {/* Stock badges */}
                     {(() => {
                       const stock = item.stock;
                       const isSized = ["Shirt","Jeans","Combo","Tshirt"].includes(item.category);
@@ -652,7 +605,7 @@ const gridClass = {
                       return null;
                     })()}
 
-                    {/* Wishlist button */}
+                    {/* Wishlist button — aria-label added for accessibility */}
                     <button
                       onClick={(e) => handleWishlistClick(e, item._id)}
                       className={`absolute top-3 right-3 p-1.5 sm:p-2 rounded-full transition-all duration-300 border z-20 ${
@@ -661,16 +614,15 @@ const gridClass = {
                           : "bg-white/90 text-gray-700 border-transparent hover:bg-black hover:text-white"
                       }`}
                       title={isInWishlist(item._id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                      aria-label={isInWishlist(item._id) ? `Remove ${item.name} from Wishlist` : `Add ${item.name} to Wishlist`}
                     >
                       <Heart size={14} className={isInWishlist(item._id) ? "fill-white" : ""} />
                     </button>
 
-                    {/* Quick view slide-up — driven by React state, works on all cards */}
                     <div className={`quick-add ${hoveredCard === index ? 'hovered' : ''}`}>View Product</div>
 
                   </div>
 
-                  {/* Product info — editorial style */}
                   <div className="mt-3 px-0.5">
                     <h3 className="text-xs sm:text-sm font-light text-gray-900 tracking-wide uppercase leading-snug group-hover:text-gray-500 transition-colors duration-300 truncate">
                       {item.name}

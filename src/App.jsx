@@ -40,8 +40,8 @@ const App = () => {
       {/* Navbar */}
       <Navbar />
 
-      {/* Main Content */}
-      <div className="flex-1 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
+      {/* Main Content — <main> landmark required for accessibility */}
+      <main className="flex-1 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
         <SearchBar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -69,7 +69,7 @@ const App = () => {
           <Route path="/limited-editions" element={<LimitedEdition />} />
           <Route path="/track-order" element={<TrackOrder />} />
         </Routes>
-      </div>
+      </main>
 
       {/* Footer */}
       <Footer />
