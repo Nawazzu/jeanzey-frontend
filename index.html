@@ -4,17 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.ico" />
 
-    <!-- Font Awesome for icons -->
-    <!-- PERFORMANCE: Commented out — icons replaced with react-icons in ProductItem.jsx -->
-    <!-- Uncomment this line if you need Font Awesome icons globally again -->
-    <!-- <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    /> -->
-
     <!-- Faster One font — self-hosted to eliminate Google Fonts render block -->
-    <!-- PERFORMANCE: Removed Google Fonts CDN link — font now served from /public/fonts/FasterOne.ttf -->
-    <!-- To revert: remove this <style> block and restore the Google Fonts <link> tags below -->
     <style>
       @font-face {
         font-family: 'Faster One';
@@ -25,9 +15,9 @@
       }
     </style>
 
-    <!-- PERFORMANCE: Preconnect to backend and Cloudinary — saves ~600ms on first requests -->
-    <link rel="preconnect" href="https://jeanzey-backend.onrender.com" />
-    <link rel="preconnect" href="https://res.cloudinary.com" />
+    <!-- PERFORMANCE: crossorigin added — without it preconnects are unused (confirmed by PageSpeed) -->
+    <link rel="preconnect" href="https://jeanzey-backend.onrender.com" crossorigin />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 
     <!-- Theme color for mobile browsers -->
     <meta name="theme-color" content="#78350f" />
@@ -135,7 +125,7 @@
     }
     </script>
 
-    <!-- Structured Data – Local Business (item 2 & 3) -->
+    <!-- Structured Data – Local Business -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -177,8 +167,7 @@
     </script>
 
     <!-- Google Analytics GA4 -->
-    <!-- PERFORMANCE: Commented out until real Measurement ID is available -->
-    <!-- To enable: replace G-XXXXXXXXXX with your real ID from analytics.google.com and uncomment -->
+    <!-- To enable: replace G-XXXXXXXXXX with your real ID and uncomment -->
     <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -191,35 +180,12 @@
 
   <body>
     <div id="root"></div>
-
-    <!-- React entry point -->
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Razorpay checkout -->
-    <!-- PERFORMANCE: Commented out from global load — now loaded dynamically in PlaceOrder.jsx only when needed -->
-    <!-- Uncomment this line to restore global Razorpay loading -->
+    <!-- Razorpay: loaded dynamically in PlaceOrder.jsx only -->
     <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
 
-    <!-- Facebook Pixel -->
-    <!-- PERFORMANCE: Commented out until real Pixel ID is available -->
-    <!-- To enable: replace YOUR_PIXEL_ID with your real ID from business.facebook.com/events/manager and uncomment -->
-    <!-- <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', 'YOUR_PIXEL_ID');
-      fbq('track', 'PageView');
-    </script>
-    <noscript>
-      <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"
-      />
-    </noscript> -->
-
+    <!-- Facebook Pixel: enable when real Pixel ID is available -->
+    <!-- <script>...</script> -->
   </body>
 </html>
