@@ -172,7 +172,7 @@ const handleTouchEnd = (e) => {
   // To revert: replace the getOptimisedUrl function with just: const getOptimisedUrl = (url) => url;
   const getOptimisedUrl = (url) => {
     if (!url || !url.includes('res.cloudinary.com')) return url;
-    return url.replace('/upload/', '/upload/f_auto,q_auto,w_400/');
+    return url.replace('/upload/', '/upload/f_auto,q_auto,w_200/');
   };
 
   return (

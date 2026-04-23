@@ -17,6 +17,7 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Instant scroll to top on any nav click
   const handleNavClick = () => {
     window.scrollTo(0, 0);
   };
@@ -26,20 +27,9 @@ const Footer = () => {
       <div className="w-full px-6 sm:px-10 md:px-16 lg:px-24">
         {/* Logo */}
         <div className="text-center mb-6 md:mb-8">
-          <picture>
-            <source srcSet="/images/logo.webp" type="image/webp" />
-            <img
-              src="/images/logo.jpg"
-              alt="Jean-Zey"
-              style={{
-                height: 'clamp(48px, 8vw, 80px)',
-                width: 'auto',
-                objectFit: 'contain',
-                margin: '0 auto',
-                display: 'block',
-              }}
-            />
-          </picture>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-wide prata-regular text-gray-900">
+            JEAN-ZEY
+          </h2>
           <div className="h-[2px] w-16 bg-gray-400/60 mx-auto mt-3"></div>
         </div>
 
@@ -47,18 +37,18 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-14 text-center sm:text-left">
           {/* Column 1 */}
           <div className="space-y-2">
-            {/* FIXED: h4 → p to fix heading order accessibility issue */}
-            <p className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
+            <h4 className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
                            pl-2 sm:pl-3 md:pl-4 lg:pl-6 xl:pl-8">
               About
-            </p>
+            </h4>
             <ul className="space-y-3 text-sm">
               {[
                 { name: "Our Story", path: "/about" },
                 { name: "My Orders", path: "/orders" },
-                { name: "Wishlist", path: "/wishlist" },
+                   { name: "Wishlist", path: "/wishlist" },
+               
                 { name: "The Founder's Vision", path: "/founders-vision" },
-                { name: "Our Policy", path: "/PolicyPage" },
+               { name: "Our Policy", path: "/PolicyPage" },
               ].map((item, idx) => (
                 <li key={idx} className="footer-link">
                   <Link to={item.path} onClick={handleNavClick}>{item.name}</Link>
@@ -69,11 +59,10 @@ const Footer = () => {
 
           {/* Column 2 */}
           <div className="space-y-2">
-            {/* FIXED: h4 → p */}
-            <p className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
+            <h4 className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
                            pl-2 sm:pl-3 md:pl-4 lg:pl-6 xl:pl-8">
               Customer Care
-            </p>
+            </h4>
             <ul className="space-y-3 text-sm">
               {[
                 { name: "Shipping & Returns", path: "/shipping-returns" },
@@ -91,11 +80,10 @@ const Footer = () => {
 
           {/* Column 3 */}
           <div className="space-y-2">
-            {/* FIXED: h4 → p */}
-            <p className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
+            <h4 className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
                            pl-2 sm:pl-3 md:pl-4 lg:pl-6 xl:pl-8">
               Collections
-            </p>
+            </h4>
             <ul className="space-y-3 text-sm">
               {["Coming Soon", "Our Gifts", "Limited Editions"].map((item, idx) => (
                 <li key={idx} className="footer-link">
@@ -120,33 +108,31 @@ const Footer = () => {
 
           {/* Column 4 */}
           <div className="space-y-2">
-            {/* FIXED: h4 → p */}
-            <p className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
+            <h4 className="text-sm uppercase tracking-widest font-semibold mb-4 text-gray-700 
                            pl-2 sm:pl-3 md:pl-4 lg:pl-6 xl:pl-8">
               Connect
-            </p>
+            </h4>
             <ul className="space-y-3 text-sm">
               <li className="footer-link">
                 <a href="https://www.instagram.com/wear.jeanzey?igsh=OGJma3QyOXppcjY2" target="_blank" rel="noopener noreferrer">
                   Instagram
                 </a>
               </li>
+              {/* Pinterest — add real URL when available */}
+              {/* <li className="footer-link">
+                <a href="https://pinterest.com/demo" target="_blank" rel="noopener noreferrer">
+                  Pinterest
+                </a>
+              </li> */}
+              {/* Facebook — removed until real page URL is available */}
               <li className="footer-link">
                 <a href="https://wa.me/+919987683105" target="_blank" rel="noopener noreferrer">
                   Whatsapp
                 </a>
               </li>
+            
             </ul>
           </div>
-        </div>
-
-        {/* SEO keyword block */}
-        <div className="mt-10 text-center text-xs text-gray-600 leading-relaxed max-w-3xl mx-auto">
-          <p>
-            Jeanzey is Mumbai's premium fashion brand offering luxury jeans, shirts, t-shirts and combo outfits for men and women.
-            Shop online and get free delivery across Mumbai, Navi Mumbai and Thane.
-            Discover our latest collections of premium clothing — crafted with precision, delivered to your doorstep.
-          </p>
         </div>
 
         {/* Divider */}
@@ -194,6 +180,7 @@ const Footer = () => {
           font-weight: 500;
           text-decoration: none;
         }
+
         .footer-link::before {
           content: "";
           position: absolute;
@@ -210,9 +197,11 @@ const Footer = () => {
           transform: skewX(-25deg);
           transition: transform 0.8s ease;
         }
+
         .footer-link:hover::before {
           transform: translateX(200%) skewX(-25deg);
         }
+
         .footer-link:hover {
           transform: scale(1.08);
           background: rgba(255, 255, 255, 0.08);
